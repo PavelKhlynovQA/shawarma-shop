@@ -161,7 +161,29 @@ npm run test:e2e        # 30 тестов: витрина → корзина →
 npm run report          # HTML-отчёт
 ```
 
+Тесты построены на **Page Object Model** — селекторы живут в `tests/e2e/pages/`, а не в тестах.
 Подробнее — [docs/08-e2e-testing.md](docs/08-e2e-testing.md).
+
+## Визуальные тесты
+
+```bash
+npm run test:visual         # сравнить с эталонами
+npm run test:visual:update  # перегенерировать эталоны
+```
+
+5 скриншот-снапшотов: витрина, модалка товара, корзина, форма заказа, вход в админку.
+Подробнее — [docs/12-visual-testing.md](docs/12-visual-testing.md).
+
+## Allure-отчёт
+
+```bash
+npm run test:e2e          # прогон -> allure-results/
+npm run allure:generate   # генерация HTML
+npm run allure:open       # http://localhost:5050
+```
+
+30 тестов, 100% passed, ~27 секунд. Скриншот отчёта — [docs/screenshots/allure-report.png](docs/screenshots/allure-report.png).
+Подробнее — [docs/11-allure.md](docs/11-allure.md).
 
 ## CI/CD
 
@@ -181,6 +203,9 @@ GitHub Actions: API-тесты, E2E на Chromium и сборка Docker-обр�
 | [docs/07-test-data.md](docs/07-test-data.md) | Тестовые данные |
 | [docs/08-e2e-testing.md](docs/08-e2e-testing.md) | E2E-тесты на Playwright: 30 сценариев |
 | [docs/09-ci-cd.md](docs/09-ci-cd.md) | CI/CD на GitHub Actions |
+| [docs/11-allure.md](docs/11-allure.md) | Allure-отчёт |
+| [docs/12-visual-testing.md](docs/12-visual-testing.md) | Визуальные тесты |
+| [docs/10-github-setup.md](docs/10-github-setup.md) | Публикация на GitHub |
 | [docs/confluence/](docs/confluence/) | Готовые страницы для Confluence |
 
 ## Идеи для развития

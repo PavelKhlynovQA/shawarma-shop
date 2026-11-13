@@ -10,7 +10,18 @@ coverage/
 
 # Playwright
 playwright-report/
+playwright-report-visual/
 test-results/
 blob-report/
 .playwright/
-e2e-run.log
+
+# Allure
+allure-results/
+allure-report/
+
+# Временные файлы и портативная Java
+.tmp/
+tools/
+
+# Диффы визуальных тестов
+*.actual.png

@@ -1,64 +1,62 @@
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin, createOrderViaApi } from './helpers.js';
+import { AdminPage } from './pages/AdminPage.js';
+import { ADMIN, createOrderViaApi, getAdminToken } from './helpers.js';
 
 test.describe('Админ-панель', function () {
+  let admin;
+
   test.beforeEach(async function ({ page }) {
-    await page.goto('/admin');
-    await page.evaluate(function () { localStorage.clear(); });
-    await page.reload();
+    admin = new AdminPage(page);
+    await admin.openWithCleanSession();
   });
 
-  test('E2E-30: без авторизации показывается форма входа', async function ({ page }) {
-    await expect(page.locator('.login-box')).toBeVisible();
-    await expect(page.locator('h2', { hasText: 'Вход для администратора' })).toBeVisible();
-    await expect(page.locator('#logoutButton')).toBeHidden();
+  test('E2E-30: без авторизации показывается форма входа', async function () {
+    await expect(admin.loginBox).toBeVisible();
+    await expect(admin.page.locator('h2', { hasText: 'Вход для администратора' })).toBeVisible();
+    await expect(admin.logoutButton).toBeHidden();
   });
 
   test('E2E-31: неверный пароль показывает ошибку', async function ({ page }) {
-    await page.locator('#email').fill('admin@shawarma.ru');
-    await page.locator('#password').fill('wrong-password');
-    await page.locator('#loginButton').click();
+    await admin.login(ADMIN.email, 'wrong-password');
 
     await expect(page.locator('.toast--error')).toContainText('Неверный email или пароль');
-    await expect(page.locator('.login-box')).toBeVisible();
+    await expect(admin.loginBox).toBeVisible();
   });
 
-  test('E2E-32: успешный вход открывает статистику и таблицу заказов', async function ({ page }) {
-    await loginAsAdmin(page);
+  test('E2E-32: успешный вход открывает статистику и таблицу заказов', async function () {
+    await admin.loginAsAdmin();
 
-    await expect(page.locator('.stat')).toHaveCount(4);
-    await expect(page.locator('h1')).toHaveText('Заказы');
-    await expect(page.locator('table').first()).toBeVisible();
-    await expect(page.locator('#logoutButton')).toBeVisible();
+    await expect(admin.stats).toHaveCount(4);
+    await expect(admin.page.locator('h1')).toHaveText('Заказы');
+    await expect(admin.ordersTable).toBeVisible();
+    await expect(admin.logoutButton).toBeVisible();
   });
 
-  test('E2E-33: смена статуса заказа NEW → Подтверждён', async function ({ page, request }) {
+  test('E2E-33: смена статуса заказа NEW → Подтверждён', async function ({ request }) {
     const order = await createOrderViaApi(request);
-    await loginAsAdmin(page);
+    await admin.loginAsAdmin();
 
-    const row = page.locator('tr', { hasText: order.publicId });
-    await expect(row).toContainText('Новый');
+    await expect(admin.orderRow(order.publicId)).toContainText('Новый');
 
-    await row.locator('[data-status=CONFIRMED]').click();
-    await expect(page.locator('tr', { hasText: order.publicId }).locator('.status')).toHaveText('Подтверждён');
+    await admin.changeStatus(order.publicId, 'CONFIRMED');
+    await expect(admin.orderRow(order.publicId).locator('.status')).toHaveText('Подтверждён');
   });
 
-  test('E2E-34: недопустимый переход статуса отклоняется', async function ({ page, request }) {
+  test('E2E-34: недоступные переходы статуса не предлагаются', async function ({ request }) {
     const order = await createOrderViaApi(request);
-    await loginAsAdmin(page);
+    await admin.loginAsAdmin();
 
-    const row = page.locator('tr', { hasText: order.publicId });
-    // В статусе NEW кнопки «Выполнен» быть не должно
+    const row = admin.orderRow(order.publicId);
     await expect(row.locator('[data-status=DONE]')).toHaveCount(0);
     await expect(row.locator('[data-status=CANCELLED]')).toBeVisible();
   });
 
   test('E2E-35: скрытый товар исчезает из витрины', async function ({ page, request }) {
-    await loginAsAdmin(page);
+    await admin.loginAsAdmin();
 
-    const productRow = page.locator('tr', { hasText: 'Морс клюквенный' });
-    await productRow.locator('[data-toggle]').click();
-    await expect(page.locator('tr', { hasText: 'Морс клюквенный' }).locator('[data-toggle]')).toHaveText('Вернуть');
+    const row = admin.productRow('Морс клюквенный');
+    await row.locator('[data-toggle]').click();
+    await expect(admin.productRow('Морс клюквенный').locator('[data-toggle]')).toHaveText('Вернуть');
 
     try {
       const storefront = await page.context().newPage();
@@ -68,27 +66,19 @@ test.describe('Админ-панель', function () {
       await expect(storefront.locator('.card__name', { hasText: 'Морс клюквенный' })).toHaveCount(0);
       await storefront.close();
     } finally {
-      // возвращаем товар в продажу, чтобы не ломать другие тесты
+      const token = await getAdminToken(request);
       await request.patch('/api/admin/products/18', {
-        headers: { Authorization: 'Bearer ' + (await getAdminToken(request)) },
+        headers: { Authorization: 'Bearer ' + token },
         data: { isAvailable: true },
       });
     }
   });
 
-  test('E2E-36: выход из аккаунта возвращает форму входа', async function ({ page }) {
-    await loginAsAdmin(page);
-    await page.locator('#logoutButton').click();
+  test('E2E-36: выход из аккаунта возвращает форму входа', async function () {
+    await admin.loginAsAdmin();
+    await admin.logout();
 
-    await expect(page.locator('.login-box')).toBeVisible();
-    await expect(page.locator('.stat')).toHaveCount(0);
+    await expect(admin.loginBox).toBeVisible();
+    await expect(admin.stats).toHaveCount(0);
   });
 });
-
-async function getAdminToken(request) {
-  const response = await request.post('/api/auth/login', {
-    data: { email: 'admin@shawarma.ru', password: 'Admin123!' },
-  });
-  const body = await response.json();
-  return body.token;
-}

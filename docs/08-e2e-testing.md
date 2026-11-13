@@ -26,12 +26,37 @@ npm run report            # HTML-отчёт последнего прогона
 
 ```
 tests/e2e/
-├── helpers.js          общие шаги: добавить в корзину, заполнить форму, логин
-├── storefront.spec.js  витрина
-├── cart.spec.js        корзина и расчёты
-├── checkout.spec.js    оформление заказа
-└── admin.spec.js       админ-панель
+├── pages/                  Page Object Model
+│   ├── BasePage.js         базовый переход и общее поведение
+│   ├── StorefrontPage.js   витрина: карточки, вкладки, добавление в корзину
+│   ├── ProductModal.js     модалка товара: количество, дополнители
+│   ├── CartDrawer.js       корзина: количество, удаление, переход к оформлению
+│   ├── CheckoutModal.js    форма заказа и экран успеха
+│   └── AdminPage.js        вход, заказы, статусы, товары
+├── helpers.js              справочники товаров и API-хелперы
+├── storefront.spec.js      витрина
+├── cart.spec.js            корзина и расчёты
+├── checkout.spec.js        оформление заказа
+└── admin.spec.js           админ-панель
 ```
+
+## Page Object Model
+
+Тесты не содержат CSS-селекторов — они живут только в классах страниц. Если вёрстка поменяется, правится один файл.
+
+```js
+const store = new StorefrontPage(page);
+await store.open();
+await store.addToCart(PRODUCTS.classic.name, { quantity: 2 });
+
+const cart = await store.openCart();
+const checkout = await cart.goToCheckout();
+await checkout.fill({ deliveryType: 'pickup' });
+await checkout.submit();
+await expect(checkout.successId).toBeVisible();
+```
+
+Каждый Page Object инкапсулирует локаторы и действия, возвращает следующий объект — получается читаемая цепочка, как в тесте выше.
 
 ## Покрытие
 

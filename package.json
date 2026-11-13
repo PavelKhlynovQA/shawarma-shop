@@ -14,8 +14,12 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
-    "test:all": "npm test && npm run test:e2e",
+    "test:visual": "playwright test --config=playwright.visual.config.js",
+    "test:visual:update": "playwright test --config=playwright.visual.config.js --update-snapshots",
+    "test:all": "npm test && npm run test:e2e && npm run test:visual",
     "report": "playwright show-report",
+    "allure:generate": "node scripts/allure-report.mjs",
+    "allure:open": "node scripts/allure-open.mjs",
     "check:docker": "node tests/docker-smoke.mjs"
   },
   "dependencies": {
@@ -23,7 +27,9 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.65.0"
+    "@playwright/test": "^1.65.0",
+    "allure-commandline": "^2.46.1",
+    "allure-playwright": "^3.14.0"
   },
   "engines": {
     "node": ">=22"
