@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<title>Шаурма-Мастер — как всё было сделано</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: #0d0a07;
+    color: #f6efe6;
+    width: 1400px;
+  }
+  .poster { padding: 56px 64px 64px; background:
+      radial-gradient(900px 420px at 15% -8%, #4a2c12 0%, transparent 65%),
+      radial-gradient(900px 500px at 90% 8%, #2b1a3a 0%, transparent 60%),
+      #0d0a07; }
+
+  /* ---------- Шапка ---------- */
+  .kicker { font-size: 13px; letter-spacing: 3px; color: #ff8a00; font-weight: 700; text-transform: uppercase; }
+  h1 { font-size: 62px; letter-spacing: -2px; margin: 10px 0 6px; line-height: 1; }
+  h1 span { color: #ff8a00; }
+  .sub { font-size: 20px; color: #b7a48d; max-width: 900px; line-height: 1.45; }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 34px 0 46px; }
+  .metric { background: linear-gradient(160deg, #241d16, #1a1410); border: 1px solid #3a2e23; border-radius: 18px; padding: 20px 22px; }
+  .metric b { display: block; font-size: 40px; color: #ffb340; line-height: 1; letter-spacing: -1px; }
+  .metric span { display: block; margin-top: 8px; font-size: 13px; color: #a99883; }
+
+  /* ---------- Таймлайн ---------- */
+  .timeline { position: relative; padding-left: 78px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 27px; top: 14px; bottom: 18px; width: 3px;
+    background: linear-gradient(180deg, #ff8a00 0%, #ff6a00 35%, #6b4a9e 70%, #2f6b4a 100%);
+    border-radius: 2px; opacity: .55;
+  }
+
+  .step { position: relative; margin-bottom: 22px; }
+  .marker {
+    position: absolute; left: -78px; top: 18px; width: 58px; height: 58px; border-radius: 50%;
+    background: #1a1410; border: 2px solid #ff8a00; color: #ffb340;
+    display: grid; place-items: center; font-size: 24px; font-weight: 800; z-index: 2;
+  }
+  .card {
+    background: #191310; border: 1px solid #352a20; border-radius: 18px; padding: 22px 26px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  }
+  .card__head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  h3 { font-size: 22px; letter-spacing: -.3px; }
+  .tag { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .tag--research { background: #1d2c3f; color: #7fb2ff; }
+  .tag--code { background: #33240f; color: #ffb340; }
+  .tag--qa { background: #3a2030; color: #ff9ec4; }
+  .tag--infra { background: #1f3226; color: #7ee2a8; }
+  .tag--test { background: #2a2140; color: #c4a6ff; }
+
+  .card p { color: #c3b3a0; font-size: 15.5px; line-height: 1.5; margin-top: 10px; }
+  .card ul { margin: 12px 0 0 18px; color: #d9ccbc; font-size: 15px; line-height: 1.65; }
+  .card li::marker { color: #ff8a00; }
+  .card code { background: #241c14; border: 1px solid #3a2e23; border-radius: 6px; padding: 1px 7px; font-family: Consolas, ui-monospace, monospace; font-size: 13.5px; color: #ffd8a8; }
+
+  .result { margin-top: 14px; display: inline-block; font-size: 13.5px; color: #7ee2a8; background: #16241c; border: 1px solid #24503a; border-radius: 10px; padding: 7px 13px; }
+  .result b { color: #b6ffd4; }
+
+  .found { margin-top: 14px; background: #2a1512; border: 1px solid #5c2a22; border-radius: 12px; padding: 12px 16px; font-size: 14px; color: #ffc9bf; }
+  .found b { color: #ff8a7a; }
+
+  /* ---------- Финал ---------- */
+  .final { margin-top: 34px; display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; }
+  .panel { background: #191310; border: 1px solid #352a20; border-radius: 18px; padding: 24px 26px; }
+  .panel h3 { font-size: 20px; margin-bottom: 14px; }
+  .row { display: flex; justify-content: space-between; gap: 14px; padding: 9px 0; border-bottom: 1px dashed #2e241c; font-size: 14.5px; }
+  .row:last-child { border-bottom: 0; }
+  .row span { color: #a99883; }
+  .row b { color: #ffd8a8; font-weight: 600; }
+  .cmd { font-family: Consolas, ui-monospace, monospace; background: #120e0a; border: 1px solid #33291f; border-radius: 8px; padding: 8px 12px; color: #9ee6b8; font-size: 13.5px; margin-bottom: 8px; }
+
+  .footnote { margin-top: 26px; text-align: center; color: #7c6c5c; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <div class="kicker">Учебный проект · портфолио QA</div>
+  <h1>Шаурма<span>-</span>Мастер</h1>
+  <p class="sub">От пустой папки до работающего магазина с 59 автотестами, Docker, PostgreSQL, CI и отчётом Allure. Восемь этапов, две побочные задачи и два реальных бага, найденных тестами.</p>
+
+  <div class="metrics">
+    <div class="metric"><b>59</b><span>автотестов: 24 API + 30 E2E + 5 visual</span></div>
+    <div class="metric"><b>10</b><span>баг-репортов, 9 воспроизведены вживую</span></div>
+    <div class="metric"><b>85</b><span>файлов в репозитории, 5 коммитов</span></div>
+    <div class="metric"><b>100%</b><span>зелёный прогон в Allure за 27 секунд</span></div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="step">
+      <div class="marker">0</div>
+      <div class="card">
+        <div class="card__head"><h3>Разведка окружения</h3><span class="tag tag--research">исследование</span></div>
+        <p>Прежде чем что-то строить — проверил, что вообще есть на машине и что умеет среда.</p>
+        <ul>
+          <li>Найдено: Node 26, Docker 29 (демон выключен), Git 2.56, Python 3.12, VS Code</li>
+          <li>Выяснено: PowerShell и curl блокируют TLS, а Node — нет</li>
+          <li>Выяснено: браузер в песочнице не запускается (named pipes, crashpad)</li>
+        </ul>
+        <div class="result">✓ <b>Вывод:</b> строим на Node + Express, проверяем через API</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="marker">1</div>
+      <div class="card">
+        <div class="card__head"><h3>Побочный квест: билеты РЖД</h3><span class="tag tag--research">исследование</span></div>
+        <p>Ты просил найти билеты Волгоград → Краснодар. Сайт не открывался — разобрался почему.</p>
+        <ul>
+          <li>Причина: РЖД перешёл на сертификат Минцифры, а его нет в хранилище Windows</li>
+          <li>Браузер поднять не удалось — данные взял из партнёрского фида Яндекс.Расписаний</li>
+          <li>Нашёл дневные поезда <code>363У</code> (14.11) и <code>357Й</code> (15.11), разбивку по полкам</li>
+        </ul>
+        <div class="result">✓ <b>Результат:</b> 31 нижнее место в купе на 15.11 по 4 804 ₽</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="marker">2</div>
+      <div class="card">
+        <div class="card__head"><h3>Каркас магазина</h3><span class="tag tag--code">разработка</span></div>
+        <p>Полноценный интернет-магазин с нуля: backend, витрина, админка, база.</p>
+        <ul>
+          <li>20 REST-эндпоинтов, JWT на встроенном <code>crypto</code>, пароли на <code>scrypt</code></li>
+          <li>Всего 2 зависимости — <code>express</code> и <code>pg</code></li>
+          <li>Одна база кода для PostgreSQL и SQLite через адаптер</li>
+          <li>18 товаров, 5 категорий, 4 промокода, 2 демо-аккаунта</li>
+        </ul>
+        <div class="result">✓ <b>Результат:</b> витрина и админка работают, заказ создаётся</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="marker">3</div>
+      <div class="card">
+        <div class="card__head"><h3>QA-артефакты</h3><span class="tag tag--qa">документация</span></div>
+        <p>Всё, что нужно тестировщику для работы — до начала тестирования.</p>
+        <ul>
+          <li>Требования, тест-план, <b>40 тест-кейсов</b>, чек-лист регрессии</li>
+          <li>8 баг-репортов, справочник API, тестовые данные, матрица покрытия</li>
+          <li>OpenAPI-спека и Postman-коллекция с автозахватом токена</li>
+          <li>3 готовые страницы для Confluence</li>
+        </ul>
+        <div class="result">✓ <b>Результат:</b> папка docs/ — 10 документов</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="marker">4</div>
+      <div class="card">
+        <div class="card__head"><h3>API-автотесты</h3><span class="tag tag--test">тесты</span></div>
+        <p>Первый уровень защиты — контракт и бизнес-логика без браузера.</p>
+        <ul>
+          <li>24 теста на встроенном <code>node:test</code> — без единой зависимости</li>
+          <li>Smoke, позитивные, негативные, права доступа, переходы статусов</li>
+          <li>Найдены баги: 500 на <code>?limit=abc</code>, <code>null</code> в скидке, отрицательная скидка</li>
+        </ul>
+        <div class="result">✓ <b>24/24 зелёных</b>, прогон ~2 секунды</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="marker">5</div>
+      <div class="card">
+        <div class="card__head"><h3>Docker и PostgreSQL</h3><span class="tag tag--infra">инфраструктура</span></div>
+        <p>Docker Desktop не запускался — пришлось лечить.</p>
+        <ul>
+          <li>Причина: после принудительного завершения остались <code>Launcher.lock</code>, <code>backend.lock</code>, <code>frontend.lock</code></li>
+          <li>Локи удалены, демон поднялся за 4 секунды, собран стек из двух контейнеров</li>
+          <li>Проверено на живой БД: 8 таблиц, заказ на 810 ₽ = 900 − 10%</li>
+        </ul>
+        <div class="result">✓ <b>Результат:</b> app + postgres в статусе healthy, DBeaver подключается</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="marker">6</div>
+      <div class="card">
+        <div class="card__head"><h3>E2E-тесты Playwright</h3><span class="tag tag--test">тесты</span></div>
+        <p>30 сценариев через настоящий браузер: витрина → корзина → оформление → админка.</p>
+        <div class="found">
+          <b>BUG-009 (Blocker)</b> — модалки не скрывались, страница была затемнена и <b>некликабельна</b>.<br>
+          <b>BUG-010 (Major)</b> — неверный пароль в админке не показывал ошибку.<br>
+          Оба бага не видели 24 API-теста. Найдены только E2E и исправлены.
+        </div>
+        <div class="result">✓ <b>30/30 зелёных</b> за 27 секунд</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="marker">7</div>
+      <div class="card">
+        <div class="card__head"><h3>Page Object Model</h3><span class="tag tag--code">рефакторинг</span></div>
+        <p>Тесты переписаны так, чтобы вёрстка правила в одном месте.</p>
+        <ul>
+          <li>6 классов: Storefront, ProductModal, CartDrawer, CheckoutModal, Admin, Base</li>
+          <li>Ни одного CSS-селектора в тестах — только методы страниц</li>
+          <li>Все 30 тестов остались зелёными после рефакторинга</li>
+        </ul>
+        <div class="result">✓ <b>Результат:</b> правка вёрстки = правка одного файла</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="marker">8</div>
+      <div class="card">
+        <div class="card__head"><h3>Allure + визуальные тесты + CI</h3><span class="tag tag--infra">инфраструктура</span></div>
+        <p>Финальный слой: отчётность и автоматическая проверка на GitHub.</p>
+        <ul>
+          <li>Allure: 30 тестов, 100%, шаги и вложения — портативный JRE в <code>tools/jre</code></li>
+          <li>Визуальные: 5 эталонных скриншотов, тосты скрыты, анимации отключены</li>
+          <li>GitHub Actions: 4 job'а — API, E2E + Allure, визуальные, сборка Docker</li>
+        </ul>
+        <div class="result">✓ <b>Результат:</b> полный прогон = 59 тестов, ~40 секунд</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="final">
+    <div class="panel">
+      <h3>Как посмотреть результат</h3>
+      <div class="row"><span>Витрина магазина</span><b>localhost:3000</b></div>
+      <div class="row"><span>Админка</span><b>localhost:3000/admin</b></div>
+      <div class="row"><span>Swagger / OpenAPI</span><b>openapi.yaml</b></div>
+      <div class="row"><span>Тест-кейсы и баги</span><b>docs/03, docs/05</b></div>
+      <div class="row"><span>Скриншоты до/после бага</span><b>docs/screenshots</b></div>
+      <div class="row"><span>DBeaver</span><b>localhost:5432 · shawarma</b></div>
+    </div>
+
+    <div class="panel">
+      <h3>Команды</h3>
+      <div class="cmd">npm start</div>
+      <div class="cmd">npm test</div>
+      <div class="cmd">npm run test:e2e</div>
+      <div class="cmd">npm run test:visual</div>
+      <div class="cmd">npm run allure:generate &amp;&amp; npm run allure:open</div>
+      <div class="cmd">docker compose up --build</div>
+    </div>
+  </div>
+
+  <div class="footnote">Шаурма-Мастер · учебный проект для портфолио QA · Node.js · PostgreSQL · Docker · Playwright · Allure · GitHub Actions</div>
+</div>
+</body>
+</html>
