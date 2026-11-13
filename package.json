@@ -10,7 +10,8 @@
     "seed": "node src/db/seed-run.js",
     "test": "node --test --test-isolation=none tests/",
     "test:api": "node --test --test-isolation=none tests/api.test.js",
-    "test:smoke": "node --test --test-isolation=none tests/smoke.test.js"
+    "test:smoke": "node --test --test-isolation=none tests/smoke.test.js",
+    "check:docker": "node tests/docker-smoke.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",
