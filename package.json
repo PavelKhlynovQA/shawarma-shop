@@ -1,0 +1,22 @@
+{
+  "name": "shawarma-shop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Учебный интернет-магазин шаурмы — полигон для функционального и автоматизированного тестирования",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/db/seed-run.js",
+    "test": "node --test --test-isolation=none tests/",
+    "test:api": "node --test --test-isolation=none tests/api.test.js",
+    "test:smoke": "node --test --test-isolation=none tests/smoke.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

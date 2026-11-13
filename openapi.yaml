@@ -1,0 +1,272 @@
+openapi: 3.0.3
+info:
+  title: Шаурма-Мастер API
+  version: 1.0.0
+  description: REST API учебного интернет-магазина шаурмы
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: health
+  - name: menu
+  - name: auth
+  - name: promo
+  - name: orders
+  - name: admin
+paths:
+  /api/health:
+    get:
+      tags: [health]
+      summary: Проверка живости
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  dbDriver: { type: string, example: sqlite }
+  /api/menu:
+    get:
+      tags: [menu]
+      summary: Категории с товарами
+      parameters:
+        - in: query
+          name: includeUnavailable
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Список категорий
+  /api/extras:
+    get:
+      tags: [menu]
+      summary: Дополнители
+      responses:
+        '200': { description: OK }
+  /api/products/{id}:
+    get:
+      tags: [menu]
+      summary: Товар по id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: OK }
+        '404': { description: Товар не найден }
+  /api/auth/register:
+    post:
+      tags: [auth]
+      summary: Регистрация
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email: { type: string }
+                password: { type: string, minLength: 6 }
+                name: { type: string }
+                phone: { type: string }
+      responses:
+        '201': { description: Создан }
+        '400': { description: Ошибка валидации }
+        '409': { description: Email занят }
+  /api/auth/login:
+    post:
+      tags: [auth]
+      summary: Вход
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: Токен }
+        '401': { description: Неверные данные }
+  /api/auth/me:
+    get:
+      tags: [auth]
+      summary: Текущий пользователь
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+        '401': { description: Нет токена }
+  /api/promo/validate:
+    post:
+      tags: [promo]
+      summary: Проверка промокода
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code: { type: string }
+                subtotal: { type: integer }
+      responses:
+        '200': { description: Скидка рассчитана }
+        '409': { description: Промокод неактивен или просрочен }
+  /api/orders:
+    post:
+      tags: [orders]
+      summary: Создание заказа
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customerName, phone, items]
+              properties:
+                customerName: { type: string }
+                phone: { type: string }
+                deliveryType: { type: string, enum: [delivery, pickup] }
+                address: { type: string }
+                comment: { type: string }
+                promoCode: { type: string }
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId: { type: integer }
+                      quantity: { type: integer, minimum: 1, maximum: 20 }
+                      extraIds:
+                        type: array
+                        items: { type: integer }
+      responses:
+        '201': { description: Заказ создан }
+        '400': { description: Ошибка валидации }
+        '409': { description: Нарушено бизнес-правило }
+    get:
+      tags: [orders]
+      summary: Мои заказы
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+  /api/orders/{publicId}:
+    get:
+      tags: [orders]
+      summary: Заказ по номеру
+      parameters:
+        - in: path
+          name: publicId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+        '404': { description: Не найден }
+  /api/orders/{publicId}/history:
+    get:
+      tags: [orders]
+      summary: История статусов
+      parameters:
+        - in: path
+          name: publicId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+  /api/admin/orders:
+    get:
+      tags: [admin]
+      summary: Все заказы
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema: { type: integer }
+        - in: query
+          name: offset
+          schema: { type: integer }
+      responses:
+        '200': { description: OK }
+        '401': { description: Нет токена }
+        '403': { description: Не админ }
+  /api/admin/orders/{id}/status:
+    patch:
+      tags: [admin]
+      summary: Смена статуса заказа
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [NEW, CONFIRMED, COOKING, DELIVERING, DONE, CANCELLED]
+                note: { type: string }
+      responses:
+        '200': { description: Обновлено }
+        '409': { description: Недопустимый переход }
+  /api/admin/stats:
+    get:
+      tags: [admin]
+      summary: Статистика
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+  /api/admin/products:
+    get:
+      tags: [admin]
+      summary: Все товары
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+    post:
+      tags: [admin]
+      summary: Создать товар
+      security: [{ bearerAuth: [] }]
+      responses:
+        '201': { description: Создан }
+  /api/admin/products/{id}:
+    patch:
+      tags: [admin]
+      summary: Изменить товар
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Обновлён }
+    delete:
+      tags: [admin]
+      summary: Скрыть товар
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Скрыт }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

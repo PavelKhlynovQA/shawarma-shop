@@ -1,0 +1,50 @@
+### Шаурма-Мастер — ручные запросы (расширение REST Client для VS Code)
+@baseUrl = http://localhost:3000
+
+### 1. Проверка живости
+GET {{baseUrl}}/api/health
+
+### 2. Меню
+GET {{baseUrl}}/api/menu
+
+### 3. Вход администратора
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@shawarma.ru",
+  "password": "Admin123!"
+}
+
+### 4. Промокод
+POST {{baseUrl}}/api/promo/validate
+Content-Type: application/json
+
+{
+  "code": "SHAWARMA10",
+  "subtotal": 1000
+}
+
+### 5. Создание заказа
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "customerName": "Иван Тестов",
+  "phone": "+7 900 123-45-67",
+  "deliveryType": "delivery",
+  "address": "Волгоград, ул. Мира, 15",
+  "promoCode": "SHAWARMA10",
+  "items": [{ "productId": 1, "quantity": 2, "extraIds": [1, 2] }]
+}
+
+### 6. Негатив: пустая корзина (ожидаем 400)
+POST {{baseUrl}}/api/orders
+Content-Type: application/json
+
+{
+  "customerName": "Тест",
+  "phone": "+79001234567",
+  "deliveryType": "pickup",
+  "items": []
+}

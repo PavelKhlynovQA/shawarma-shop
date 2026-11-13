@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Шаурма-Мастер — админ-панель</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 20px 0; }
+    .stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+    .stat b { display: block; font-size: 26px; color: var(--accent-2); }
+    .stat span { color: var(--muted); font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: var(--radius); overflow: hidden; margin-bottom: 30px; }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 13px; }
+    th { color: var(--muted); font-weight: 600; background: #2a2118; }
+    .status { padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .status--NEW { background: #2b3a55; color: #9dc2ff; }
+    .status--CONFIRMED { background: #2f3f23; color: #b6e58a; }
+    .status--COOKING { background: #4a3320; color: #ffbd7a; }
+    .status--DELIVERING { background: #3d2b4a; color: #d3a6ff; }
+    .status--DONE { background: #1f4030; color: #7ee2a8; }
+    .status--CANCELLED { background: #4a2424; color: #ff9e9e; }
+    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .mini { padding: 5px 10px; font-size: 12px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; }
+    .mini:hover { border-color: var(--accent); color: var(--accent-2); }
+    .login-box { max-width: 380px; margin: 80px auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="logo" href="/">🌯 <span>Шаурма<b>Мастер</b></span></a>
+      <span class="badge">Админ-панель</span>
+      <button class="btn btn--ghost" id="logoutButton" style="margin-left:auto" hidden>Выйти</button>
+    </div>
+  </header>
+
+  <main class="container" id="app"></main>
+
+  <div class="toasts" id="toasts"></div>
+  <script src="/admin.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Шаурма-Мастер — доставка шаурмы в Волгограде</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="logo" href="/">🌯 <span>Шаурма<b>Мастер</b></span></a>
+      <div class="topbar__info">
+        <span class="badge">Доставка 40–60 мин</span>
+        <span class="badge badge--muted">с 10:00 до 23:00</span>
+      </div>
+      <button class="cart-button" id="cartButton" type="button">
+        🛒 Корзина <span class="cart-button__count" id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Шаурма, которая решает</h1>
+      <p>Готовим на гриле при тебе. Свежие овощи, мясо без заморозки, соусы собственного приготовления.</p>
+      <div class="hero__facts">
+        <div><b>30 мин</b><span>средняя доставка</span></div>
+        <div><b>4.8 ★</b><span>1 200+ отзывов</span></div>
+        <div><b>от 500 ₽</b><span>минимальный заказ</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <nav class="tabs" id="categoryTabs"></nav>
+    <section id="menu" class="grid"></section>
+    <p class="empty" id="menuEmpty" hidden>Меню загружается…</p>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <span>© 2026 Шаурма-Мастер — учебный проект для практики тестирования</span>
+      <a href="/admin">Админ-панель</a>
+    </div>
+  </footer>
+
+  <!-- Корзина -->
+  <div class="drawer" id="cartDrawer" hidden>
+    <div class="drawer__backdrop" data-close-cart></div>
+    <aside class="drawer__panel">
+      <header class="drawer__head">
+        <h2>Корзина</h2>
+        <button class="icon-button" data-close-cart type="button">✕</button>
+      </header>
+      <div class="drawer__body" id="cartItems"></div>
+      <footer class="drawer__foot" id="cartFooter"></footer>
+    </aside>
+  </div>
+
+  <!-- Модалка товара -->
+  <div class="modal" id="productModal" hidden>
+    <div class="modal__backdrop" data-close-modal></div>
+    <div class="modal__panel" id="productModalBody"></div>
+  </div>
+
+  <!-- Модалка оформления -->
+  <div class="modal" id="checkoutModal" hidden>
+    <div class="modal__backdrop" data-close-checkout></div>
+    <div class="modal__panel" id="checkoutBody"></div>
+  </div>
+
+  <!-- Уведомления -->
+  <div class="toasts" id="toasts"></div>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
