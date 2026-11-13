@@ -42,7 +42,9 @@ async function api(method, path, body) {
   const response = await fetch(path, { method: method, headers: headers, body: body ? JSON.stringify(body) : undefined });
   let data = null;
   try { data = await response.json(); } catch (e) { data = null; }
-  if (response.status === 401) {
+  // Автовыход только если токен был отправлен: иначе 401 от /auth/login
+  // ошибочно трактуется как истёкшая сессия и сообщение об ошибке не показывается (BUG-010).
+  if (response.status === 401 && token) {
     localStorage.removeItem(TOKEN_KEY);
     renderLogin();
     throw new Error('Сессия истекла, войдите заново');

@@ -11,11 +11,19 @@
     "test": "node --test --test-isolation=none tests/",
     "test:api": "node --test --test-isolation=none tests/api.test.js",
     "test:smoke": "node --test --test-isolation=none tests/smoke.test.js",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "npm test && npm run test:e2e",
+    "report": "playwright show-report",
     "check:docker": "node tests/docker-smoke.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",
     "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0"
   },
   "engines": {
     "node": ">=22"

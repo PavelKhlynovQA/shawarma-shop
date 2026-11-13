@@ -1,5 +1,12 @@
 # 🌯 Шаурма-Мастер — учебный интернет-магазин
 
+![CI](https://github.com/OWNER/shawarma-shop/actions/workflows/ci.yml/badge.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)
+![Тесты](https://img.shields.io/badge/tests-54%20passed-success)
+![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33)
+
+> Замени `OWNER` в бейдже CI на свой GitHub-логин после первого push.
+
 Полноценный проект интернет-магазина шаурмы, созданный как **полигон для функционального и автоматизированного тестирования**. Реальный backend, база данных, UI, Docker и полный набор тестовых артефактов.
 
 > Проект специально сделан так, чтобы на нём было что тестировать: бизнес-правила, ограничения, состояния заказа, негативные сценарии и несколько намеренно оставленных дефектов (см. `docs/05-bug-reports.md`).
@@ -145,6 +152,22 @@ npm run test:smoke    # только smoke
 
 В наборе **24 теста**: smoke, позитивные и негативные сценарии, проверка прав, переходы статусов.
 
+
+## E2E-тесты (Playwright)
+
+```bash
+npx playwright install chromium
+npm run test:e2e        # 30 тестов: витрина → корзина → оформление → админка
+npm run report          # HTML-отчёт
+```
+
+Подробнее — [docs/08-e2e-testing.md](docs/08-e2e-testing.md).
+
+## CI/CD
+
+GitHub Actions: API-тесты, E2E на Chromium и сборка Docker-образа при каждом push.
+Конфигурация — [.github/workflows/ci.yml](.github/workflows/ci.yml), описание — [docs/09-ci-cd.md](docs/09-ci-cd.md).
+
 ## QA-артефакты
 
 | Документ | Что внутри |
@@ -156,6 +179,8 @@ npm run test:smoke    # только smoke
 | [docs/05-bug-reports.md](docs/05-bug-reports.md) | Шаблон и 8 баг-репортов |
 | [docs/06-api-reference.md](docs/06-api-reference.md) | Справочник API |
 | [docs/07-test-data.md](docs/07-test-data.md) | Тестовые данные |
+| [docs/08-e2e-testing.md](docs/08-e2e-testing.md) | E2E-тесты на Playwright: 30 сценариев |
+| [docs/09-ci-cd.md](docs/09-ci-cd.md) | CI/CD на GitHub Actions |
 | [docs/confluence/](docs/confluence/) | Готовые страницы для Confluence |
 
 ## Идеи для развития
