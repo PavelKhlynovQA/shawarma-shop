@@ -16,6 +16,7 @@ export function createMenuRouter(ctx) {
       isSpicy: Boolean(row.is_spicy),
       isAvailable: Boolean(row.is_available),
       emoji: row.emoji,
+      imageUrl: row.image_url || null,
     };
   }
 

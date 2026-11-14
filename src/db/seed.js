@@ -76,10 +76,43 @@ export async function seedIfEmpty(db) {
     categoryIds[category.slug] = row.id;
   }
 
+  const images = {
+    'Шаурма классическая': 'shawarma-classic.jpg',
+    'Шаурма с говядиной': 'shawarma-beef.jpg',
+    'Шаурма острая': 'shawarma-spicy.jpg',
+    'Шаурма сырная': 'shawarma-cheese.jpg',
+    'Шаурма XXL': 'shawarma-xxl.jpg',
+    'Шаурма вегетарианская': 'shawarma-veg.jpg',
+    'Донер в пите': 'doner-pita.jpg',
+    'Донер с сыром': 'doner-cheese.jpg',
+    'Картофель фри': 'fries.jpg',
+    'Наггетсы (6 шт.)': 'nuggets.jpg',
+    'Луковые кольца': 'onion-rings.jpg',
+    'Соус чесночный': 'sauce-garlic.jpg',
+    'Соус острый': 'sauce-spicy.jpg',
+    'Соус сырный': 'sauce-cheese.jpg',
+    'Кола 0.5': 'cola.jpg',
+    'Айран 0.5': 'ayran.jpg',
+    'Чай чёрный': 'tea.jpg',
+    'Морс клюквенный': 'morse.jpg',
+  };
+
   for (const product of PRODUCTS) {
+    const imageFile = images[product[1]];
     await db.run(
-      'INSERT INTO products (category_id, name, description, price, weight_g, is_spicy, is_available, emoji, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [categoryIds[product[0]], product[1], product[2], product[3], product[4], product[5], 1, product[6], now]
+      'INSERT INTO products (category_id, name, description, price, weight_g, is_spicy, is_available, emoji, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        categoryIds[product[0]],
+        product[1],
+        product[2],
+        product[3],
+        product[4],
+        product[5],
+        1,
+        product[6],
+        imageFile ? '/images/menu/' + imageFile : null,
+        now,
+      ]
     );
   }
 

@@ -47,6 +47,10 @@ export function createApp(ctx) {
 
   app.use(express.static(publicDir));
 
+  app.get('/credits', function (req, res) {
+    res.sendFile(path.join(publicDir, 'credits.html'));
+  });
+
   app.get('/admin', function (req, res) {
     res.sendFile(path.join(publicDir, 'admin.html'));
   });

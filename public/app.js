@@ -387,15 +387,21 @@ function renderTabs() {
 }
 
 function productCard(product) {
+  const media = product.imageUrl
+    ? '<img class="card__img" src="' + product.imageUrl + '" alt="' + escapeHtml(product.name) + '" loading="lazy" />'
+    : '<div class="card__emoji">' + (product.emoji || '🌯') + '</div>';
+
   return [
     '<article class="card" data-product="' + product.id + '">',
-    '  <div class="card__emoji">' + (product.emoji || '🌯') + '</div>',
-    '  <h3 class="card__name">' + product.name + (product.isSpicy ? ' <span class="spicy">🌶</span>' : '') + '</h3>',
-    '  <p class="card__desc">' + (product.description || '') + '</p>',
-    '  <div class="card__meta"><span>' + (product.weightG ? product.weightG + ' г' : '') + '</span></div>',
-    '  <div class="card__foot">',
-    '    <span class="card__price">' + money(product.price) + '</span>',
-    '    <button class="btn" data-add="' + product.id + '">В корзину</button>',
+    media,
+    '  <div class="card__body">',
+    '    <h3 class="card__name">' + product.name + (product.isSpicy ? ' <span class="spicy">🌶</span>' : '') + '</h3>',
+    '    <p class="card__desc">' + (product.description || '') + '</p>',
+    '    <div class="card__meta"><span>' + (product.weightG ? product.weightG + ' г' : '') + '</span></div>',
+    '    <div class="card__foot">',
+    '      <span class="card__price">' + money(product.price) + '</span>',
+    '      <button class="btn" data-add="' + product.id + '">В корзину</button>',
+    '    </div>',
     '  </div>',
     '</article>',
   ].join('');
@@ -434,6 +440,7 @@ function openProduct(productId) {
   state.modalQuantity = 1;
 
   el.productModalBody.innerHTML = [
+    product.imageUrl ? '<img class="modal__img" src="' + product.imageUrl + '" alt="' + escapeHtml(product.name) + '" />' : '',
     '<h2>' + product.emoji + ' ' + product.name + '</h2>',
     '<p class="card__desc">' + (product.description || '') + '</p>',
     '<div class="field"><label>Количество</label>',
