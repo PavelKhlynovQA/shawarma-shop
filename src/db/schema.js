@@ -34,6 +34,7 @@ export function ddl(dialect) {
       'is_spicy INTEGER NOT NULL DEFAULT 0,' +
       'is_available INTEGER NOT NULL DEFAULT 1,' +
       'emoji TEXT,' +
+      'image_url TEXT,' +
       'created_at TEXT NOT NULL' +
     ')',
 

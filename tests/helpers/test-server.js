@@ -5,6 +5,7 @@ import crypto from 'node:crypto';
 
 import { createDb } from '../../src/db/index.js';
 import { ddl } from '../../src/db/schema.js';
+import { migrate } from '../../src/db/migrate.js';
 import { seedIfEmpty } from '../../src/db/seed.js';
 import { createApp } from '../../src/app.js';
 import { config } from '../../src/config.js';
@@ -16,6 +17,7 @@ export async function startTestServer() {
   for (const statement of ddl('sqlite')) {
     await db.exec(statement);
   }
+  await migrate(db);
   await seedIfEmpty(db);
 
   const app = createApp({ db: db, config: config });

@@ -15,7 +15,7 @@
 
 | Слой | Технология |
 |---|---|
-| Backend | Node.js 22+, Express 4 |
+| Backend | Node.js 24+, Express 4 |
 | БД (Docker) | PostgreSQL 16 |
 | БД (локально) | SQLite (встроенный `node:sqlite`) |
 | Frontend | Vanilla JS + CSS, без сборки |
@@ -151,6 +151,7 @@ shawarma-shop/
 npm test              # все тесты
 npm run test:api      # только API
 npm run test:smoke    # только smoke
+npm run test:no-isolation  # если среда не даёт запускать дочерние процессы
 ```
 
 В наборе **24 теста**: smoke, позитивные и негативные сценарии, проверка прав, переходы статусов.

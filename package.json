@@ -8,7 +8,7 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "seed": "node src/db/seed-run.js",
-    "test": "node --test --test-isolation=none tests/",
+    "test": "node --test tests/",
     "test:api": "node --test --test-isolation=none tests/api.test.js",
     "test:smoke": "node --test --test-isolation=none tests/smoke.test.js",
     "test:e2e": "playwright test",
@@ -22,7 +22,8 @@
     "allure:open": "node scripts/allure-open.mjs",
     "check:docker": "node tests/docker-smoke.mjs",
     "test:journey": "playwright test tests/e2e/journey.spec.js",
-    "demo:journey": "node scripts/journey-demo.mjs"
+    "demo:journey": "node scripts/journey-demo.mjs",
+    "test:no-isolation": "node --test --test-isolation=none tests/"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -34,6 +35,6 @@
     "allure-playwright": "^3.14.0"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   }
 }
