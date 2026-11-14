@@ -213,6 +213,23 @@ npm run allure:open       # http://localhost:5050
 GitHub Actions: API-тесты, E2E на Chromium и сборка Docker-образа при каждом push.
 Конфигурация — [.github/workflows/ci.yml](.github/workflows/ci.yml), описание — [docs/09-ci-cd.md](docs/09-ci-cd.md).
 
+## Документация для Confluence и Jira
+
+```bash
+npm run docs:build
+```
+
+Появляется в `qa-docs/`:
+
+| Что | Куда |
+|---|---|
+| `site/index.html` + `QA-Documentation.pdf` | Полная документация одним файлом |
+| `confluence/*.html` | 10 страниц в формате Storage Format — вставляются в Confluence |
+| `jira/test-cases.csv` | 53 тест-кейса для импорта в Jira |
+| `jira/bug-reports.csv` | 10 баг-репортов |
+
+Инструкция по импорту — [qa-docs/README.md](qa-docs/README.md).
+
 ## QA-артефакты
 
 | Документ | Что внутри |

@@ -23,7 +23,8 @@
     "check:docker": "node tests/docker-smoke.mjs",
     "test:journey": "playwright test tests/e2e/journey.spec.js",
     "demo:journey": "node scripts/journey-demo.mjs",
-    "test:no-isolation": "node --test --test-isolation=none \"tests/**/*.test.js\""
+    "test:no-isolation": "node --test --test-isolation=none \"tests/**/*.test.js\"",
+    "docs:build": "node qa-docs/build.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",

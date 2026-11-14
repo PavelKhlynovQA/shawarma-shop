@@ -1,0 +1,9 @@
+<h1>Тестовые данные</h1>
+<h2>Учётные записи</h2>
+<table class=""><thead><tr><th>Роль</th><th>Email</th><th>Пароль</th></tr></thead><tbody><tr><td>Администратор</td><td>admin@shawarma.ru</td><td>Admin123!</td></tr><tr><td>Покупатель</td><td>customer@test.ru</td><td>Test123!</td></tr><tr><td>Покупатель по телефону</td><td>—</td><td>код из SMS (демо: показывается на экране)</td></tr></tbody></table>
+<h2>Промокоды</h2>
+<table class=""><thead><tr><th>Код</th><th>Скидка</th><th>Состояние</th><th>Назначение</th></tr></thead><tbody><tr><td>SHAWARMA10</td><td>10%</td><td>активен</td><td>позитивные проверки</td></tr><tr><td>FIRSTORDER</td><td>15%</td><td>активен</td><td>позитивные проверки</td></tr><tr><td>SUMMER20</td><td>20%</td><td>неактивен</td><td>негативный тест PROMO_INACTIVE</td></tr><tr><td>EXPIRED5</td><td>5%</td><td>просрочен (01.01.2024)</td><td>негативный тест PROMO_EXPIRED</td></tr></tbody></table>
+<h2>Тестовые карты</h2>
+<table class=""><thead><tr><th>Номер</th><th>Срок</th><th>CVV</th><th>Результат</th></tr></thead><tbody><tr><td>4111 1111 1111 1111</td><td>12/30</td><td>123</td><td>успешная оплата</td></tr><tr><td>0000 1111 2222 3333</td><td>12/30</td><td>123</td><td>отказ банка, 402 CARD_DECLINED</td></tr></tbody></table>
+<h2>Окружения</h2>
+<table class=""><thead><tr><th>Окружение</th><th>БД</th><th>URL</th><th>Запуск</th></tr></thead><tbody><tr><td>Local (SQLite)</td><td>SQLite ./data/*.db</td><td>http://localhost:3000</td><td>npm start</td></tr><tr><td>Docker (PostgreSQL)</td><td>PostgreSQL 16</td><td>http://localhost:3000</td><td>docker compose up --build -d</td></tr><tr><td>CI</td><td>SQLite in-memory</td><td>—</td><td>GitHub Actions</td></tr></tbody></table>
