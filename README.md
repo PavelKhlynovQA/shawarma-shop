@@ -1,11 +1,11 @@
 # 🌯 Шаурма-Мастер — учебный интернет-магазин
 
-![CI](https://github.com/OWNER/shawarma-shop/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/PavelKhlynovQA/shawarma-shop/actions/workflows/ci.yml/badge.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)
-![Тесты](https://img.shields.io/badge/tests-54%20passed-success)
+![Тесты](https://img.shields.io/badge/tests-64%20passed-success)
 ![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33)
 
-> Замени `OWNER` в бейдже CI на свой GitHub-логин после первого push.
+> Репозиторий: [github.com/PavelKhlynovQA/shawarma-shop](https://github.com/PavelKhlynovQA/shawarma-shop)
 
 Полноценный проект интернет-магазина шаурмы, созданный как **полигон для функционального и автоматизированного тестирования**. Реальный backend, база данных, UI, Docker и полный набор тестовых артефактов.
 
