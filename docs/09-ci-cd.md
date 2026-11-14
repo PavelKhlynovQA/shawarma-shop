@@ -6,7 +6,7 @@
 
 | Job | Что делает | Время |
 |---|---|---|
-| `api-tests` | `npm test` — 24 API-теста на `node:test` | ~20 c |
+| `api-tests` | `npm test` — 23 API-теста на `node:test` | ~20 c |
 | `e2e-tests` | 30 Playwright-тестов + генерация Allure | ~3 мин |
 | `visual-tests` | 5 визуальных тестов на windows-latest | ~2 мин |
 | `docker-build` | Собирает образ и проверяет, что контейнер отвечает на `/api/health` | ~2 мин |

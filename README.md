@@ -1,8 +1,8 @@
 # 🌯 Шаурма-Мастер — учебный интернет-магазин
 
 ![CI](https://github.com/PavelKhlynovQA/shawarma-shop/actions/workflows/ci.yml/badge.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)
-![Тесты](https://img.shields.io/badge/tests-64%20passed-success)
+![Node](https://img.shields.io/badge/node-%3E%3D24-brightgreen)
+![Тесты](https://img.shields.io/badge/tests-63%20passed-success)
 ![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33)
 
 > Репозиторий: [github.com/PavelKhlynovQA/shawarma-shop](https://github.com/PavelKhlynovQA/shawarma-shop)
@@ -154,7 +154,7 @@ npm run test:smoke    # только smoke
 npm run test:no-isolation  # если среда не даёт запускать дочерние процессы
 ```
 
-В наборе **24 теста**: smoke, позитивные и негативные сценарии, проверка прав, переходы статусов.
+В наборе **23 теста**: smoke, позитивные и негативные сценарии, проверка прав, переходы статусов.
 
 
 ## Фотографии меню
