@@ -54,9 +54,10 @@ test.describe('Оформление заказа', function () {
 
     await checkout.fill();
     await checkout.submit();
+    await checkout.payOnDelivery();
 
     await expect(checkout.successId).toHaveText(/^SH-\d{6}-[0-9A-F]{4}$/);
-    await expect(checkout.statusLine).toContainText('NEW');
+    await expect(checkout.statusLine).toContainText('Принят');
     await expect(checkout.success).toContainText('560 ₽');
   });
 
@@ -66,6 +67,7 @@ test.describe('Оформление заказа', function () {
 
     await checkout.fill({ deliveryType: 'pickup' });
     await checkout.submit();
+    await checkout.payOnDelivery();
 
     await expect(checkout.successId).toBeVisible();
     await expect(checkout.success).toContainText('40 ₽');
@@ -82,6 +84,7 @@ test.describe('Оформление заказа', function () {
 
     await checkout.fill();
     await checkout.submit();
+    await checkout.payOnDelivery();
     await expect(checkout.success).toContainText('504 ₽');
   });
 
@@ -101,6 +104,7 @@ test.describe('Оформление заказа', function () {
 
     await checkout.fill();
     await checkout.submit();
+    await checkout.payOnDelivery();
     await checkout.expectSuccess();
 
     await expect(store.cartCount).toHaveText('0');

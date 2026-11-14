@@ -12,7 +12,16 @@ const state = {
   modalProduct: null,
   modalExtras: [],
   modalQuantity: 1,
+  token: null,
+  user: null,
+  phone: null,
+  trackingTimer: null,
+  lastStatus: null,
 };
+
+const AUTH_KEY = 'shawarma_auth_v1';
+const STATUS_LABELS = { NEW: 'Принят', CONFIRMED: 'Подтверждён', COOKING: 'Готовится', DELIVERING: 'В доставке', DONE: 'Доставлен', CANCELLED: 'Отменён' };
+const STATUS_FLOW = ['NEW', 'CONFIRMED', 'COOKING', 'DELIVERING', 'DONE'];
 
 const el = {
   tabs: document.getElementById('categoryTabs'),
@@ -28,6 +37,11 @@ const el = {
   checkoutModal: document.getElementById('checkoutModal'),
   checkoutBody: document.getElementById('checkoutBody'),
   toasts: document.getElementById('toasts'),
+  authArea: document.getElementById('authArea'),
+  authModal: document.getElementById('authModal'),
+  authBody: document.getElementById('authBody'),
+  ordersModal: document.getElementById('ordersModal'),
+  ordersBody: document.getElementById('ordersBody'),
 };
 
 function money(value) {
@@ -36,6 +50,7 @@ function money(value) {
 
 async function api(method, path, body) {
   const options = { method: method, headers: { 'Content-Type': 'application/json' } };
+  if (state.token) options.headers.Authorization = 'Bearer ' + state.token;
   if (body) options.body = JSON.stringify(body);
   const response = await fetch(API + path, options);
   let data = null;
@@ -53,6 +68,261 @@ function toast(message, isError) {
   node.textContent = message;
   el.toasts.appendChild(node);
   setTimeout(function () { node.remove(); }, 3200);
+}
+
+// ---------- Авторизация по телефону ----------
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+function loadAuth() {
+  try {
+    const raw = localStorage.getItem(AUTH_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    state.token = data.token;
+    state.user = data.user;
+  } catch (error) {
+    state.token = null;
+    state.user = null;
+  }
+}
+
+function saveAuth(token, user) {
+  state.token = token;
+  state.user = user;
+  if (token) {
+    localStorage.setItem(AUTH_KEY, JSON.stringify({ token: token, user: user }));
+  } else {
+    localStorage.removeItem(AUTH_KEY);
+  }
+  renderAuthArea();
+}
+
+function renderAuthArea() {
+  if (!el.authArea) return;
+  if (state.user) {
+    el.authArea.innerHTML = [
+      '<span class="auth-chip">👤 <b>' + escapeHtml(state.user.name) + '</b></span>',
+      '<button class="btn btn--ghost" id="myOrdersBtn" type="button">Мои заказы</button>',
+      '<button class="btn btn--ghost" id="logoutBtn" type="button">Выйти</button>',
+    ].join('');
+  } else {
+    el.authArea.innerHTML = '<button class="btn btn--ghost" id="loginBtn" type="button">Войти</button>';
+  }
+}
+
+function openAuthModal() {
+  el.authBody.innerHTML = [
+    '<h2>Вход по телефону</h2>',
+    '<p class="card__desc">Отправим код подтверждения — пароль не нужен</p>',
+    '<div class="field"><label>Номер телефона</label><input name="phone" placeholder="+7 900 000-00-00" /></div>',
+    '<button class="btn btn--block" id="sendCodeBtn" type="button">Получить код</button>',
+  ].join('');
+
+  el.authModal.hidden = false;
+  const phoneInput = el.authBody.querySelector('[name=phone]');
+  phoneInput.focus();
+
+  el.authBody.querySelector('#sendCodeBtn').addEventListener('click', async function () {
+    const result = await api('POST', '/api/auth/phone/request-code', { phone: phoneInput.value.trim() });
+    if (!result.ok) {
+      toast(result.data && result.data.error ? result.data.error.message : 'Не удалось отправить код', true);
+      return;
+    }
+    state.phone = result.data.phone;
+    renderAuthCodeStep(result.data.debugCode);
+  });
+}
+
+function renderAuthCodeStep(debugCode) {
+  el.authBody.innerHTML = [
+    '<h2>Введите код из SMS</h2>',
+    '<p class="card__desc">Код отправлен на номер ' + escapeHtml(state.phone) + '</p>',
+    '<div class="field"><label>Код</label><input name="code" inputmode="numeric" maxlength="4" placeholder="0000" /></div>',
+    debugCode ? '<div class="hint">Демо-режим: SMS не отправляется, ваш код — <code id="demoCode">' + debugCode + '</code></div>' : '',
+    '<button class="btn btn--block" id="verifyCodeBtn" type="button" style="margin-top:12px">Войти</button>',
+  ].join('');
+
+  const codeInput = el.authBody.querySelector('[name=code]');
+  codeInput.focus();
+
+  el.authBody.querySelector('#verifyCodeBtn').addEventListener('click', async function () {
+    const result = await api('POST', '/api/auth/phone/verify', { phone: state.phone, code: codeInput.value.trim() });
+    if (!result.ok) {
+      toast(result.data && result.data.error ? result.data.error.message : 'Неверный код', true);
+      return;
+    }
+    saveAuth(result.data.token, result.data.user);
+    el.authModal.hidden = true;
+    toast('Добро пожаловать, ' + result.data.user.name);
+  });
+}
+
+async function openOrdersModal() {
+  el.ordersModal.hidden = false;
+  el.ordersBody.innerHTML = '<h2>Мои заказы</h2><p class="card__desc">Загрузка…</p>';
+
+  const result = await api('GET', '/api/orders');
+  if (!result.ok) {
+    el.ordersBody.innerHTML = '<h2>Мои заказы</h2><p class="card__desc">Не удалось загрузить</p>';
+    return;
+  }
+
+  const orders = result.data.orders;
+  el.ordersBody.innerHTML = [
+    '<h2>Мои заказы</h2>',
+    orders.length
+      ? orders.map(function (order) {
+          return [
+            '<div class="cart-row" style="margin-bottom:8px">',
+            '  <div class="cart-row__main">',
+            '    <div class="cart-row__title">' + order.publicId + '</div>',
+            '    <div class="cart-row__sub">' + STATUS_LABELS[order.status] + ' · ' + new Date(order.createdAt).toLocaleString('ru-RU') + '</div>',
+            '  </div>',
+            '  <div class="cart-row__price">' + money(order.total) + '</div>',
+            '</div>',
+          ].join('');
+        }).join('')
+      : '<p class="card__desc">Пока нет заказов</p>',
+    '<button class="btn btn--ghost btn--block" data-close-orders type="button" style="margin-top:10px">Закрыть</button>',
+  ].join('');
+}
+
+// ---------- Оплата ----------
+
+function renderPaymentStep(order) {
+  stopTracking();
+  el.checkoutBody.innerHTML = [
+    '<h2>Оплата заказа</h2>',
+    '<p class="card__desc">Заказ <b id="payOrderId">' + order.publicId + '</b> · к оплате <b>' + money(order.total) + '</b></p>',
+    '<div class="pay-card">',
+    '  <div class="pay-card__number">•••• •••• •••• ••••</div>',
+    '  <p class="card__desc" style="margin-top:8px">Тестовая карта: <b>4111 1111 1111 1111</b>, срок 12/30, CVV 123</p>',
+    '</div>',
+    '<form id="payForm">',
+    '  <div class="field"><label>Номер карты</label><input name="cardNumber" inputmode="numeric" placeholder="0000 0000 0000 0000" /></div>',
+    '  <div class="field"><label>Владелец карты</label><input name="cardHolder" placeholder="IVAN IVANOV" /></div>',
+    '  <div class="row2">',
+    '    <div class="field"><label>Срок</label><input name="expiry" placeholder="ММ/ГГ" maxlength="5" /></div>',
+    '    <div class="field"><label>CVV</label><input name="cvv" type="password" maxlength="3" placeholder="•••" /></div>',
+    '  </div>',
+    '  <button class="btn btn--block" type="submit" id="payButton">Оплатить ' + money(order.total) + '</button>',
+    '</form>',
+    '<button class="btn btn--ghost btn--block" id="skipPay" type="button" style="margin-top:8px">Оплатить при получении</button>',
+  ].join('');
+
+  const form = el.checkoutBody.querySelector('#payForm');
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const data = new FormData(form);
+    const button = el.checkoutBody.querySelector('#payButton');
+    button.disabled = true;
+    button.textContent = 'Проводим платёж…';
+
+    const result = await api('POST', '/api/orders/' + order.publicId + '/pay', {
+      cardNumber: String(data.get('cardNumber') || ''),
+      cardHolder: String(data.get('cardHolder') || ''),
+      expiry: String(data.get('expiry') || ''),
+      cvv: String(data.get('cvv') || ''),
+    });
+
+    if (!result.ok) {
+      button.disabled = false;
+      button.textContent = 'Оплатить ' + money(order.total);
+      const error = result.data && result.data.error;
+      let message = error ? error.message : 'Платёж не прошёл';
+      if (error && error.details && error.details.length) {
+        message = error.details.map(function (d) { return d.message; }).join('; ');
+      }
+      toast(message, true);
+      return;
+    }
+
+    renderOrderSuccess(result.data.order, true);
+  });
+
+  el.checkoutBody.querySelector('#skipPay').addEventListener('click', function () {
+    renderOrderSuccess(order, false);
+  });
+}
+
+// ---------- Экран заказа и отслеживание ----------
+
+function renderOrderSuccess(order, paid) {
+  state.lastStatus = order.status;
+  el.checkoutBody.innerHTML = [
+    '<div class="success">',
+    '  <div class="success__icon">' + (paid ? '💳' : '✅') + '</div>',
+    '  <h2>' + (paid ? 'Оплата прошла' : 'Заказ принят') + '</h2>',
+    '  <div class="success__id">' + order.publicId + '</div>',
+    '  <p class="card__desc">' + money(order.total) + ' · ' + (paid ? 'оплачено картой •' + (order.cardLast4 || '') : 'оплата при получении') + '</p>',
+    '</div>',
+    '<div class="track">',
+    '  <div class="track__steps" id="trackSteps"></div>',
+    '  <div class="status-line">Статус: <b id="trackStatus">' + (STATUS_LABELS[order.status] || order.status) + '</b></div>',
+    '</div>',
+    '<div class="order-banner" id="orderBanner" hidden></div>',
+    '<p class="card__desc" style="text-align:center">Следим за статусом автоматически — обновляется каждые 2 секунды</p>',
+    '<button class="btn btn--block" data-close-checkout type="button">Отлично</button>',
+  ].join('');
+
+  paintTrackSteps(order.status);
+  startTracking(order.publicId);
+}
+
+function paintTrackSteps(status) {
+  const stepsNode = document.getElementById('trackSteps');
+  if (!stepsNode) return;
+  const currentIndex = STATUS_FLOW.indexOf(status);
+  stepsNode.innerHTML = STATUS_FLOW.map(function (step, index) {
+    const cls = index < currentIndex ? 'is-done' : index === currentIndex ? 'is-current' : '';
+    return '<div class="track__step ' + cls + '"></div>';
+  }).join('');
+}
+
+function startTracking(publicId) {
+  stopTracking();
+  state.trackingTimer = setInterval(function () { refreshTracking(publicId); }, 2000);
+}
+
+function stopTracking() {
+  if (state.trackingTimer) {
+    clearInterval(state.trackingTimer);
+    state.trackingTimer = null;
+  }
+}
+
+async function refreshTracking(publicId) {
+  const result = await api('GET', '/api/orders/' + publicId);
+  if (!result.ok) return;
+
+  const order = result.data.order;
+  const previous = state.lastStatus;
+  state.lastStatus = order.status;
+
+  const statusNode = document.getElementById('trackStatus');
+  if (statusNode) statusNode.textContent = STATUS_LABELS[order.status] || order.status;
+  paintTrackSteps(order.status);
+
+  const banner = document.getElementById('orderBanner');
+  if (!banner) return;
+
+  if (order.status === 'DELIVERING') {
+    banner.className = 'order-banner';
+    banner.innerHTML = '<b>Ваш заказ готов!</b>Курьер забрал его и скоро будет у вас. Ожидайте звонка.';
+    banner.hidden = false;
+    if (previous !== 'DELIVERING') {
+      toast('🔔 Ваш заказ готов и скоро будет доставлен');
+    }
+  } else if (order.status === 'DONE') {
+    banner.className = 'order-banner done-banner';
+    banner.innerHTML = '<b>Заказ доставлен</b>Спасибо, что выбрали Шаурма-Мастер!';
+    banner.hidden = false;
+  }
 }
 
 // ---------- Корзина ----------
@@ -325,17 +595,7 @@ function openCheckout() {
     saveCart();
     renderCart();
 
-    el.checkoutBody.innerHTML = [
-      '<div class="success">',
-      '  <div class="success__icon">✅</div>',
-      '  <h2>Заказ принят!</h2>',
-      '  <p class="card__desc">Мы позвоним для подтверждения в течение 5 минут.</p>',
-      '  <div class="success__id">' + order.publicId + '</div>',
-      '  <div class="status-line">Статус: <b>' + order.status + '</b></div>',
-      '  <p class="card__desc">Сумма: ' + money(order.total) + '</p>',
-      '  <button class="btn btn--block" data-close-checkout>Отлично</button>',
-      '</div>',
-    ].join('');
+    renderPaymentStep(order);
   });
 }
 
@@ -367,7 +627,19 @@ el.cartButton.addEventListener('click', function () {
 document.addEventListener('click', function (event) {
   if (event.target.closest('[data-close-cart]')) el.cartDrawer.hidden = true;
   if (event.target.closest('[data-close-modal]')) el.productModal.hidden = true;
-  if (event.target.closest('[data-close-checkout]')) el.checkoutModal.hidden = true;
+  if (event.target.closest('[data-close-checkout]')) {
+    stopTracking();
+    el.checkoutModal.hidden = true;
+  }
+  if (event.target.closest('[data-close-auth]')) el.authModal.hidden = true;
+  if (event.target.closest('[data-close-orders]')) el.ordersModal.hidden = true;
+
+  if (event.target.closest('#loginBtn')) openAuthModal();
+  if (event.target.closest('#myOrdersBtn')) openOrdersModal();
+  if (event.target.closest('#logoutBtn')) {
+    saveAuth(null, null);
+    toast('Вы вышли из аккаунта');
+  }
 });
 
 el.productModalBody.addEventListener('click', function (event) {
@@ -436,6 +708,8 @@ el.cartFooter.addEventListener('click', function (event) {
 
 async function bootstrap() {
   loadCart();
+  loadAuth();
+  renderAuthArea();
   renderCartCount();
 
   const [menuResult, extrasResult] = await Promise.all([api('GET', '/api/menu'), api('GET', '/api/extras')]);

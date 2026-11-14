@@ -68,6 +68,9 @@ export function ddl(dialect) {
       'discount INTEGER NOT NULL DEFAULT 0,' +
       'total INTEGER NOT NULL,' +
       'promo_code TEXT,' +
+      "payment_status TEXT NOT NULL DEFAULT 'PENDING'," +
+      'paid_at TEXT,' +
+      'card_last4 TEXT,' +
       'created_at TEXT NOT NULL,' +
       'updated_at TEXT NOT NULL' +
     ')',
@@ -82,6 +85,18 @@ export function ddl(dialect) {
       'extras TEXT,' +
       'line_total INTEGER NOT NULL' +
     ')',
+
+    'CREATE TABLE IF NOT EXISTS otp_codes (' +
+      'id ' + id + ',' +
+      'phone TEXT NOT NULL,' +
+      'code TEXT NOT NULL,' +
+      'expires_at TEXT NOT NULL,' +
+      'attempts INTEGER NOT NULL DEFAULT 0,' +
+      'used INTEGER NOT NULL DEFAULT 0,' +
+      'created_at TEXT NOT NULL' +
+    ')',
+
+    'CREATE INDEX IF NOT EXISTS idx_otp_phone ON otp_codes(phone)',
 
     'CREATE TABLE IF NOT EXISTS order_status_history (' +
       'id ' + id + ',' +

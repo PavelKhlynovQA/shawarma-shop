@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'node:crypto';
 import { ApiError } from '../lib/errors.js';
 import { hashPassword, verifyPassword } from '../lib/password.js';
 import { signToken } from '../lib/jwt.js';
@@ -61,6 +62,85 @@ export function createAuthRouter(ctx) {
       if (!user) throw new ApiError(401, 'INVALID_CREDENTIALS', 'Неверный email или пароль');
       if (!verifyPassword(body.password, user.password_hash)) {
         throw new ApiError(401, 'INVALID_CREDENTIALS', 'Неверный email или пароль');
+      }
+
+      res.json(issue(user));
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // ---------- Вход по номеру телефона ----------
+
+  function digitsOnly(value) {
+    return String(value || '').replace(/\D/g, '');
+  }
+
+  router.post('/auth/phone/request-code', async function (req, res, next) {
+    try {
+      const body = req.body || {};
+      const phone = digitsOnly(body.phone);
+
+      if (phone.length < 10 || phone.length > 15) {
+        throw ApiError.badRequest('Некорректный телефон', [{ field: 'phone', message: 'От 10 до 15 цифр' }]);
+      }
+
+      const code = String(crypto.randomInt(1000, 10000));
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + 5 * 60 * 1000).toISOString();
+
+      await db.run(
+        'INSERT INTO otp_codes (phone, code, expires_at, attempts, used, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+        [phone, code, expiresAt, 0, 0, now.toISOString()]
+      );
+
+      res.json({
+        message: 'Код отправлен',
+        phone: phone,
+        expiresInSeconds: 300,
+        // Демо-режим: код возвращается в ответе, чтобы можно было тестировать без SMS-шлюза.
+        debugCode: code,
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post('/auth/phone/verify', async function (req, res, next) {
+    try {
+      const body = req.body || {};
+      const phone = digitsOnly(body.phone);
+      const code = String(body.code || '').trim();
+
+      if (!code) {
+        throw ApiError.badRequest('Введите код из SMS', [{ field: 'code', message: 'Поле обязательно' }]);
+      }
+
+      const otp = await db.get(
+        'SELECT * FROM otp_codes WHERE phone = ? AND used = 0 ORDER BY id DESC LIMIT 1',
+        [phone]
+      );
+
+      if (!otp) throw ApiError.notFound('Код не найден. Запросите новый');
+      if (new Date(otp.expires_at).getTime() < Date.now()) {
+        throw ApiError.conflict('OTP_EXPIRED', 'Код истёк. Запросите новый');
+      }
+      if (otp.attempts >= 5) {
+        throw ApiError.conflict('OTP_TOO_MANY_ATTEMPTS', 'Слишком много попыток. Запросите новый код');
+      }
+      if (otp.code !== code) {
+        await db.run('UPDATE otp_codes SET attempts = attempts + 1 WHERE id = ?', [otp.id]);
+        throw ApiError.badRequest('Неверный код', [{ field: 'code', message: 'Неверный код' }]);
+      }
+
+      await db.run('UPDATE otp_codes SET used = 1 WHERE id = ?', [otp.id]);
+
+      let user = await db.get('SELECT * FROM users WHERE phone = ?', [phone]);
+      if (!user) {
+        user = await db.get(
+          'INSERT INTO users (email, password_hash, name, phone, role, created_at) VALUES (?, ?, ?, ?, ?, ?) RETURNING id, email, name, phone, role',
+          ['phone' + phone + '@shawarma.local', 'otp-only', 'Гость ' + phone.slice(-4), phone, 'customer', new Date().toISOString()]
+        );
       }
 
       res.json(issue(user));

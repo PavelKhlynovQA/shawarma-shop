@@ -145,6 +145,27 @@ body {
 .chip { border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 10px; padding: 8px 12px; cursor: pointer; font-size: 13px; }
 .chip.is-on { border-color: var(--accent); color: var(--accent-2); background: #2c1f10; }
 
+.topbar__auth { display: flex; align-items: center; gap: 8px; margin-right: 10px; }
+.auth-chip { display: flex; align-items: center; gap: 6px; background: #2a2118; border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; font-size: 13px; color: var(--text); }
+.auth-chip b { color: var(--accent-2); }
+
+.pay-card { background: linear-gradient(135deg, #3a2a17, #1d1712); border: 1px solid #5a4632; border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+.pay-card__number { font-family: ui-monospace, monospace; font-size: 18px; letter-spacing: 3px; color: #ffd8a8; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.track { margin: 14px 0; }
+.track__steps { display: flex; gap: 6px; margin-bottom: 10px; }
+.track__step { flex: 1; height: 6px; border-radius: 3px; background: #33291f; }
+.track__step.is-done { background: var(--accent); }
+.track__step.is-current { background: var(--accent-2); box-shadow: 0 0 12px rgba(255,179,64,.6); }
+.order-banner { background: #16301f; border: 1px solid #2f6b4a; border-radius: 12px; padding: 14px 16px; margin: 12px 0; color: #b6ffd4; font-size: 14px; line-height: 1.5; text-align: center; }
+.order-banner b { display: block; font-size: 16px; margin-bottom: 4px; color: #7ee2a8; }
+.done-banner { background: #1f2a3f; border-color: #2f4a6b; color: #bcd6ff; }
+.done-banner b { color: #8ab8ff; }
+
+.hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.hint code { background: #2a2118; padding: 1px 6px; border-radius: 6px; color: var(--accent-2); }
+
 .toasts { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 60; }
 .toast { background: #2a2118; border: 1px solid var(--line); border-left: 3px solid var(--accent); padding: 12px 18px; border-radius: 10px; font-size: 14px; }
 .toast--error { border-left-color: var(--danger); }

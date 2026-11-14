@@ -26,6 +26,7 @@ export default defineConfig({
     video: 'retain-on-failure',
     actionTimeout: 10_000,
     viewport: { width: 1440, height: 900 },
+    launchOptions: { slowMo: Number(process.env.SLOW_MO || 0) },
   },
 
   projects: [

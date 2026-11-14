@@ -56,4 +56,35 @@ export class CheckoutModal {
     await expect(this.successId).toBeVisible();
     return this;
   }
+
+  /** Форма оплаты картой (появляется после создания заказа). */
+  async payWithCard(data = {}) {
+    const form = this.page.locator('#payForm');
+    await expect(form).toBeVisible();
+
+    const values = Object.assign(
+      { cardNumber: '4111 1111 1111 1111', cardHolder: 'IVAN IVANOV', expiry: '12/30', cvv: '123' },
+      data
+    );
+
+    await form.locator('[name=cardNumber]').fill(values.cardNumber);
+    await form.locator('[name=cardHolder]').fill(values.cardHolder);
+    await form.locator('[name=expiry]').fill(values.expiry);
+    await form.locator('[name=cvv]').fill(values.cvv);
+    await this.page.locator('#payButton').click();
+    return this;
+  }
+
+  async payOnDelivery() {
+    await this.page.locator('#skipPay').click();
+    return this;
+  }
+
+  get trackStatus() {
+    return this.page.locator('#trackStatus');
+  }
+
+  get orderBanner() {
+    return this.page.locator('#orderBanner');
+  }
 }

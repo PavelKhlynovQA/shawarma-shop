@@ -20,7 +20,9 @@
     "report": "playwright show-report",
     "allure:generate": "node scripts/allure-report.mjs",
     "allure:open": "node scripts/allure-open.mjs",
-    "check:docker": "node tests/docker-smoke.mjs"
+    "check:docker": "node tests/docker-smoke.mjs",
+    "test:journey": "playwright test tests/e2e/journey.spec.js",
+    "demo:journey": "node scripts/journey-demo.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",

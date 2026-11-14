@@ -56,6 +56,9 @@ export function createOrdersRouter(ctx) {
       discount: order.discount,
       total: order.total,
       promoCode: order.promo_code,
+      paymentStatus: order.payment_status || 'PENDING',
+      paidAt: order.paid_at || null,
+      cardLast4: order.card_last4 || null,
       createdAt: order.created_at,
       updatedAt: order.updated_at,
       items: record.items.map(function (item) {
@@ -254,6 +257,68 @@ export function createOrdersRouter(ctx) {
       const record = await loadOrder(req.params.publicId);
       if (!record) return next(ApiError.notFound('Заказ не найден'));
       res.json({ order: serialize(record) });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // ---------- Оплата заказа ----------
+
+  router.post('/orders/:publicId/pay', ctx.optionalAuth, async function (req, res, next) {
+    try {
+      const record = await loadOrder(req.params.publicId);
+      if (!record) return next(ApiError.notFound('Заказ не найден'));
+
+      const order = record.order;
+      if (order.payment_status === 'PAID') {
+        throw ApiError.conflict('ALREADY_PAID', 'Заказ уже оплачен');
+      }
+      if (order.status === 'CANCELLED') {
+        throw ApiError.conflict('ORDER_CANCELLED', 'Заказ отменён, оплата невозможна');
+      }
+
+      const body = req.body || {};
+      const cardNumber = String(body.cardNumber || '').replace(/\s/g, '');
+      const expiry = String(body.expiry || '').trim();
+      const cvv = String(body.cvv || '').trim();
+      const cardHolder = String(body.cardHolder || '').trim();
+
+      const errors = [];
+      if (!/^\d{16}$/.test(cardNumber)) {
+        errors.push({ field: 'cardNumber', message: 'Номер карты — 16 цифр' });
+      }
+      if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+        errors.push({ field: 'expiry', message: 'Срок действия в формате ММ/ГГ' });
+      }
+      if (!/^\d{3}$/.test(cvv)) {
+        errors.push({ field: 'cvv', message: 'CVV — 3 цифры' });
+      }
+      if (cardHolder.length < 3) {
+        errors.push({ field: 'cardHolder', message: 'Укажите имя держателя карты' });
+      }
+      if (errors.length) throw ApiError.badRequest('Проверьте данные карты', errors);
+
+      const parts = expiry.split('/');
+      const month = Number(parts[0]);
+      const year = 2000 + Number(parts[1]);
+      const now = new Date();
+      if (month < 1 || month > 12 || year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1)) {
+        throw ApiError.badRequest('Срок действия карты истёк', [{ field: 'expiry', message: 'Карта просрочена' }]);
+      }
+
+      // Тестовая карта для проверки отказа банка
+      if (cardNumber.startsWith('0000')) {
+        throw new ApiError(402, 'CARD_DECLINED', 'Банк отклонил платёж');
+      }
+
+      const paidAt = new Date().toISOString();
+      await db.run(
+        'UPDATE orders SET payment_status = ?, paid_at = ?, card_last4 = ?, updated_at = ? WHERE id = ?',
+        ['PAID', paidAt, cardNumber.slice(-4), paidAt, order.id]
+      );
+
+      const updated = await loadOrder(order.public_id);
+      res.json({ order: serialize(updated), payment: { status: 'PAID', last4: cardNumber.slice(-4) } });
     } catch (error) {
       next(error);
     }

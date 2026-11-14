@@ -1,6 +1,7 @@
 import { config } from './config.js';
 import { createDb } from './db/index.js';
 import { ddl } from './db/schema.js';
+import { migrate } from './db/migrate.js';
 import { seedIfEmpty } from './db/seed.js';
 import { createApp } from './app.js';
 
@@ -9,6 +10,11 @@ async function main() {
 
   for (const statement of ddl(db.driver)) {
     await db.exec(statement);
+  }
+
+  const applied = await migrate(db);
+  if (applied.length) {
+    console.log('[migrate] добавлены колонки: ' + applied.join(', '));
   }
 
   if (config.seedOnStart) {
