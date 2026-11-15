@@ -263,6 +263,32 @@ npm run test:e2e && npm run allure:generate && npm run allure:open
 
 ---
 
+## ☕ Java-автотесты
+
+Отдельный Maven-проект в каталоге [`java-tests/`](java-tests/): **19 тестов** на JUnit 5, REST Assured и Selenium 4.
+
+| Класс | Что проверяет | Тестов |
+|---|---|---|
+| `CartApiTest` | API корзины: создание, добавление, слияние, допы, границы, изменение | 8 |
+| `OrdersApiTest` | API заказов: создание, минимальная сумма, валидация, права | 5 |
+| `StorefrontUiTest` | UI витрины через Selenium: модалка, счётчик, фильтр категорий | 6 |
+
+```bash
+cd java-tests
+mvn test                                  # все 19
+mvn test -Dtest=CartApiTest               # только API корзины
+mvn test -Dtest=StorefrontUiTest          # только UI
+```
+
+Кнопки ищутся **XPath-локаторами по видимому тексту**:
+
+```java
+By ADD_TO_CART_BUTTON = By.xpath("//button[normalize-space()='В корзину']");
+By TAB_DRINKS = By.xpath("//button[normalize-space()='Напитки']");
+```
+
+Требования: JDK 17+, Maven 3.9+, Chrome для UI-тестов.
+
 ## 🧾 Документация
 
 Вся документация генерируется из одного источника в `qa-docs/content/`.
