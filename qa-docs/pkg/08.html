@@ -1,0 +1,28 @@
+<h2>Общие правила</h2>
+<ul><li>Базовый URL: http://localhost:3000, префикс /api</li><li>Формат: JSON, Content-Type: application/json</li><li>Авторизация: Authorization: Bearer &lt;JWT&gt;</li><li>Каждый ответ содержит заголовок X-Request-Id для трассировки</li><li>Ошибки в едином формате: { error: { code, message, details } }</li></ul>
+<h2>Коды ответов</h2>
+<table data-layout="wide"><colgroup><col style="width:auto"/><col style="width:auto"/></colgroup><thead><tr><th>Код</th><th>Когда</th></tr></thead><tbody><tr><td>200</td><td>Успешное чтение или изменение</td></tr><tr><td>201</td><td>Создан заказ или пользователь</td></tr><tr><td>400</td><td>Ошибка валидации, невалидный JSON</td></tr><tr><td>401</td><td>Нет токена или он истёк</td></tr><tr><td>402</td><td>Банк отклонил платёж</td></tr><tr><td>403</td><td>Недостаточно прав</td></tr><tr><td>404</td><td>Объект не найден</td></tr><tr><td>409</td><td>Нарушено бизнес-правило</td></tr><tr><td>500</td><td>Внутренняя ошибка</td></tr></tbody></table>
+<h2>Эндпоинты</h2>
+<table data-layout="wide"><colgroup><col style="width:auto"/><col style="width:auto"/><col style="width:auto"/><col style="width:auto"/></colgroup><thead><tr><th>Метод</th><th>Путь</th><th>Доступ</th><th>Назначение</th></tr></thead><tbody><tr><td>GET</td><td>/api/health</td><td>все</td><td>Живость сервиса и драйвер БД</td></tr><tr><td>GET</td><td>/api/menu</td><td>все</td><td>Категории с товарами</td></tr><tr><td>GET</td><td>/api/products/:id</td><td>все</td><td>Карточка товара</td></tr><tr><td>GET</td><td>/api/extras</td><td>все</td><td>Дополнительные ингредиенты</td></tr><tr><td>POST</td><td>/api/auth/register</td><td>все</td><td>Регистрация по email</td></tr><tr><td>POST</td><td>/api/auth/login</td><td>все</td><td>Вход по email и паролю</td></tr><tr><td>GET</td><td>/api/auth/me</td><td>токен</td><td>Текущий пользователь</td></tr><tr><td>POST</td><td>/api/auth/phone/request-code</td><td>все</td><td>Код подтверждения на телефон</td></tr><tr><td>POST</td><td>/api/auth/phone/verify</td><td>все</td><td>Вход по коду из SMS</td></tr><tr><td>POST</td><td>/api/promo/validate</td><td>все</td><td>Проверка промокода</td></tr><tr><td>POST</td><td>/api/orders</td><td>опционально</td><td>Создание заказа</td></tr><tr><td>GET</td><td>/api/orders</td><td>токен</td><td>Заказы пользователя</td></tr><tr><td>GET</td><td>/api/orders/:publicId</td><td>все</td><td>Заказ по номеру</td></tr><tr><td>GET</td><td>/api/orders/:publicId/history</td><td>все</td><td>История статусов</td></tr><tr><td>POST</td><td>/api/orders/:publicId/pay</td><td>опционально</td><td>Оплата картой</td></tr><tr><td>GET</td><td>/api/admin/orders</td><td>админ</td><td>Очередь заказов</td></tr><tr><td>PATCH</td><td>/api/admin/orders/:id/status</td><td>админ</td><td>Смена статуса</td></tr><tr><td>GET</td><td>/api/admin/stats</td><td>админ</td><td>Статистика</td></tr><tr><td>GET</td><td>/api/admin/products</td><td>админ</td><td>Все товары</td></tr><tr><td>POST</td><td>/api/admin/products</td><td>админ</td><td>Создать товар</td></tr><tr><td>PATCH</td><td>/api/admin/products/:id</td><td>админ</td><td>Изменить товар</td></tr><tr><td>DELETE</td><td>/api/admin/products/:id</td><td>админ</td><td>Скрыть товар</td></tr></tbody></table>
+<h2>Пример: создание заказа</h2>
+<ac:structured-macro ac:name="code"><ac:parameter ac:name="language">text</ac:parameter><ac:plain-text-body><![CDATA[POST /api/orders
+{
+  "customerName": "Иван Тестов",
+  "phone": "+7 900 123-45-67",
+  "deliveryType": "delivery",
+  "address": "Волгоград, ул. Мира, 15",
+  "promoCode": "SHAWARMA10",
+  "items": [{ "productId": 1, "quantity": 2, "extraIds": [1, 2] }]
+}]]></ac:plain-text-body></ac:structured-macro>
+<h2>Пример: ошибка бизнес-правила</h2>
+<ac:structured-macro ac:name="code"><ac:parameter ac:name="language">text</ac:parameter><ac:plain-text-body><![CDATA[HTTP 409
+{
+  "error": {
+    "code": "MIN_ORDER_AMOUNT",
+    "message": "Минимальная сумма заказа с доставкой — 500 руб.",
+    "details": null
+  }
+}]]></ac:plain-text-body></ac:structured-macro>
+<h2>Коды бизнес-ошибок</h2>
+<table data-layout="wide"><colgroup><col style="width:auto"/><col style="width:auto"/></colgroup><thead><tr><th>Код</th><th>Смысл</th></tr></thead><tbody><tr><td>VALIDATION_ERROR</td><td>Не прошла валидация входа</td></tr><tr><td>INVALID_CREDENTIALS</td><td>Неверный email или пароль</td></tr><tr><td>EMAIL_TAKEN</td><td>Email уже занят</td></tr><tr><td>MIN_ORDER_AMOUNT</td><td>Сумма ниже минимальной для доставки</td></tr><tr><td>PRODUCT_UNAVAILABLE</td><td>Товар скрыт из меню</td></tr><tr><td>PROMO_INACTIVE / PROMO_EXPIRED / PROMO_LIMIT_EXCEEDED</td><td>Проблема с промокодом</td></tr><tr><td>INVALID_STATUS_TRANSITION</td><td>Недопустимый переход статуса</td></tr><tr><td>ALREADY_PAID</td><td>Заказ уже оплачен</td></tr><tr><td>CARD_DECLINED</td><td>Банк отклонил платёж</td></tr><tr><td>OTP_EXPIRED / OTP_TOO_MANY_ATTEMPTS</td><td>Проблема с кодом входа</td></tr></tbody></table>
+<p><strong>Примечание.</strong> Полная машиночитаемая спецификация — openapi.yaml в репозитории; коллекция запросов — postman/Shawarma.postman_collection.json.</p>

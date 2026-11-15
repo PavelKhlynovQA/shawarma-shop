@@ -1,0 +1,4 @@
+<p><strong>Дата:</strong> 14.11.2026 · <strong>Версия:</strong> 1.0.0</p>
+<table data-layout="wide"><colgroup><col style="width:auto"/><col style="width:auto"/></colgroup><thead><tr><th>Показатель</th><th>Значение</th></tr></thead><tbody><tr><td>Всего тест-кейсов</td><td>53</td></tr><tr><td>UI / API / БД</td><td>18 / 27 / 8</td></tr><tr><td>API-автотесты</td><td>23 из 23</td></tr><tr><td>E2E-автотесты</td><td>35 из 35</td></tr><tr><td>Визуальные тесты</td><td>5 из 5</td></tr><tr><td>Найдено дефектов</td><td>10</td></tr><tr><td>Исправлено</td><td>2</td></tr></tbody></table>
+<h2>Вывод</h2><p>Основные сценарии работают: заказ, оплата, уведомление, админские операции. Релиз не готов из-за BUG-005 (утечка ПДн) и BUG-006 (нет транзакций).</p>
+<h2>Рекомендации</h2><ul><li>Ввести схему валидации вместо ручной</li><li>Обернуть создание заказа в транзакцию</li><li>Закрыть публичный доступ к заказу</li><li>Добавить rate limiting</li></ul>

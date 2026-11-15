@@ -1,0 +1,27 @@
+<h2>Требования к окружению</h2>
+<table data-layout="wide"><colgroup><col style="width:auto"/><col style="width:auto"/><col style="width:auto"/></colgroup><thead><tr><th>Компонент</th><th>Версия</th><th>Обязателен</th></tr></thead><tbody><tr><td>Node.js</td><td>24 или выше</td><td>Да</td></tr><tr><td>Docker Desktop</td><td>4.x</td><td>Только для режима с PostgreSQL</td></tr><tr><td>DBeaver</td><td>любая</td><td>Нет, для просмотра БД</td></tr><tr><td>Git</td><td>2.x</td><td>Да, для получения кода</td></tr></tbody></table>
+<h2>Быстрый старт (без Docker)</h2>
+<ac:structured-macro ac:name="code"><ac:parameter ac:name="language">text</ac:parameter><ac:plain-text-body><![CDATA[git clone https://github.com/PavelKhlynovQA/shawarma-shop
+cd shawarma-shop
+npm install
+npm start
+
+# Открыть http://localhost:3000]]></ac:plain-text-body></ac:structured-macro>
+<p>База SQLite создаётся автоматически в ./data, схема и демо-данные применяются при старте.</p>
+<h2>Запуск с PostgreSQL в Docker</h2>
+<ac:structured-macro ac:name="code"><ac:parameter ac:name="language">text</ac:parameter><ac:plain-text-body><![CDATA[docker compose up --build -d
+docker compose ps
+
+# приложение: http://localhost:3000
+# база:       localhost:5432, shawarma / shawarma / shawarma]]></ac:plain-text-body></ac:structured-macro>
+<h2>Переменные окружения</h2>
+<table data-layout="wide"><colgroup><col style="width:auto"/><col style="width:auto"/><col style="width:auto"/></colgroup><thead><tr><th>Переменная</th><th>По умолчанию</th><th>Назначение</th></tr></thead><tbody><tr><td>PORT</td><td>3000</td><td>Порт приложения</td></tr><tr><td>DATABASE_URL</td><td>—</td><td>Строка подключения к PostgreSQL; если не задана — SQLite</td></tr><tr><td>SQLITE_FILE</td><td>./data/shawarma.db</td><td>Файл локальной базы</td></tr><tr><td>JWT_SECRET</td><td>dev-secret</td><td>Секрет подписи токенов, менять в проде</td></tr><tr><td>JWT_TTL_SECONDS</td><td>86400</td><td>Время жизни токена</td></tr><tr><td>SEED_ON_START</td><td>true</td><td>Наполнять ли базу при старте</td></tr></tbody></table>
+<h2>Проверка после развёртывания</h2>
+<ac:structured-macro ac:name="code"><ac:parameter ac:name="language">text</ac:parameter><ac:plain-text-body><![CDATA[curl http://localhost:3000/api/health
+# ожидаем: {"status":"ok","dbDriver":"postgres"}]]></ac:plain-text-body></ac:structured-macro>
+<h2>Миграции</h2>
+<p>Схема применяется автоматически при старте: CREATE TABLE IF NOT EXISTS плюс догоняющие ALTER TABLE для недостающих колонок. Отдельных команд миграции не требуется.</p>
+<h2>Откат</h2>
+<ul><li>Код: git checkout предыдущего тега и повторная сборка</li><li>Данные: восстановление из дампа pg_dump, снятого перед релизом</li><li>Быстрый откат контейнера: docker compose down &amp;&amp; docker compose up -d с предыдущим образом</li></ul>
+<h2>Типовые проблемы</h2>
+<table data-layout="wide"><colgroup><col style="width:auto"/><col style="width:auto"/><col style="width:auto"/></colgroup><thead><tr><th>Симптом</th><th>Причина</th><th>Решение</th></tr></thead><tbody><tr><td>Connection Refused на :3000</td><td>Docker не запущен</td><td>Запустить Docker Desktop, docker compose up -d</td></tr><tr><td>EADDRINUSE</td><td>Порт занят</td><td>PORT=3001 npm start</td></tr><tr><td>Docker: Launcher.lock access denied</td><td>Аварийное завершение Docker</td><td>Удалить %LOCALAPPDATA%\Docker\*.lock и запустить заново</td></tr><tr><td>npm test: spawn EPERM</td><td>Ограничения среды</td><td>npm run test:no-isolation</td></tr></tbody></table>

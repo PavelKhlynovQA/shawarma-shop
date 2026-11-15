@@ -101,9 +101,31 @@ const planBody = PLAN_SECTIONS.map(function (section) {
 }).join('\n');
 saveConfluence('02-test-plan.html', 'Тест-план', planBody);
 
-saveConfluence('03-cases-ui.html', 'Тест-кейсы UI', table(['ID', 'Название', 'Модуль', 'Приоритет', 'Предусловия', 'Шаги', 'Ожидаемый результат', 'Данные', 'Автотест', 'Статус'], caseRows(UI_CASES)));
-saveConfluence('04-cases-api.html', 'Тест-кейсы API', table(['ID', 'Название', 'Модуль', 'Приоритет', 'Предусловия', 'Запрос', 'Ожидаемый результат', 'Данные', 'Автотест', 'Статус'], caseRows(API_CASES)));
-saveConfluence('05-cases-db.html', 'Тест-кейсы БД', table(['ID', 'Название', 'Модуль', 'Приоритет', 'Предусловия', 'SQL', 'Ожидаемый результат', 'Данные', 'Автотест', 'Статус'], caseRows(DB_CASES)));
+function confluenceCases(cases, kind) {
+  const fifth = kind === 'api' ? 'Запрос' : (kind === 'db' ? 'SQL' : 'Шаги');
+  const head = ['ID', 'Название', 'Приоритет', fifth, 'Ожидаемый результат', 'Автотест'];
+  const widths = ['8%', '19%', '9%', '31%', '25%', '8%'];
+  const colgroup = '<colgroup>' + widths.map(function (w) { return '<col style="width:' + w + '"/>'; }).join('') + '</colgroup>';
+  const headHtml = '<tr>' + head.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') + '</tr>';
+  const body = cases.map(function (c) {
+    const detail = (c.steps && c.steps.length)
+      ? c.steps.map(function (s, i) { return (i + 1) + '. ' + esc(s); }).join('<br/>')
+      : '<code>' + esc(c.request || c.sql) + '</code>';
+    return '<tr>' +
+      '<td>' + esc(c.id) + '</td>' +
+      '<td><strong>' + esc(c.title) + '</strong><br/><em>' + esc(c.preconditions || '') + '</em></td>' +
+      '<td>' + esc(c.priority) + '</td>' +
+      '<td>' + detail + '</td>' +
+      '<td>' + esc(c.expected) + '</td>' +
+      '<td>' + esc(c.automation) + '</td>' +
+      '</tr>';
+  }).join('');
+  return '<table data-layout="wide">' + colgroup + '<thead>' + headHtml + '</thead><tbody>' + body + '</tbody></table>';
+}
+
+saveConfluence('03-cases-ui.html', 'Тест-кейсы UI', confluenceCases(UI_CASES, 'ui'));
+saveConfluence('04-cases-api.html', 'Тест-кейсы API', confluenceCases(API_CASES, 'api'));
+saveConfluence('05-cases-db.html', 'Тест-кейсы БД', confluenceCases(DB_CASES, 'db'));
 
 const traceRows = REQUIREMENTS.map(function (r) {
   const related = ALL_CASES.filter(function (c) { return String(c.requirement || '').indexOf(r.id) !== -1; });
