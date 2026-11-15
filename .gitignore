@@ -27,3 +27,5 @@ tools/
 *.actual.png
 .tools/
 java-tests/target/
+load/results.jtl
+load/jmeter.log
