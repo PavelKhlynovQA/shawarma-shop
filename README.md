@@ -76,7 +76,7 @@ Shawarma Project (SCRUM)
 
 ## 🎬 Презентация проекта
 
-Восемь слайдов о проекте и процессе тестирования: архитектура, артефакты, подход, кейсы, автотесты, нагрузка, итоги.
+Восемь слайдов 1920×1080 о проекте и процессе тестирования: архитектура, артефакты, подход, кейсы, автотесты, нагрузка, итоги.
 
 <table>
   <tr>
@@ -566,7 +566,7 @@ node .tmp/parse-load.mjs      # метрики в load/metrics.json
 node .tmp/build-slides.mjs    # слайды в load/presentation
 ```
 
-Презентация с результатами — [`load/presentation/`](load/presentation/) (7 слайдов). Кейсы — эпик [⚡ Нагрузочное тестирование](https://boysporting.atlassian.net/browse/SCRUM-111): 6 пройдено, 2 в бэклоге (soak и стресс).
+Презентация с результатами — [`load/presentation/`](load/presentation/) (7 слайдов, 1920×1080). Кейсы — эпик [⚡ Нагрузочное тестирование](https://boysporting.atlassian.net/browse/SCRUM-111): 6 пройдено, 2 в бэклоге (soak и стресс).
 
 ![Результаты нагрузочного тестирования](load/presentation/slide-1.png)
 
