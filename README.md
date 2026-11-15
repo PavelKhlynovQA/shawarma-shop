@@ -74,6 +74,25 @@ Shawarma Project (SCRUM)
 
 ---
 
+## 🎬 Презентация проекта
+
+Восемь слайдов о том, как устроен проект и процесс тестирования. Файлы — в каталоге [`presentation/`](presentation/).
+
+| № | Слайд | Файл |
+|---|---|---|
+| 1 | Титул: ключевые цифры проекта | [project-1.png](presentation/project-1.png) |
+| 2 | Архитектура приложения | [project-2.png](presentation/project-2.png) |
+| 3 | Архитектура тестовых артефактов | [project-3.png](presentation/project-3.png) |
+| 4 | Подход к тестированию | [project-4.png](presentation/project-4.png) |
+| 5 | Тест-кейсы по модулям | [project-5.png](presentation/project-5.png) |
+| 6 | Автотесты: две ветки | [project-6.png](presentation/project-6.png) |
+| 7 | Нагрузочное тестирование | [project-7.png](presentation/project-7.png) |
+| 8 | Дефекты и итоги | [project-8.png](presentation/project-8.png) |
+
+![Архитектура приложения](presentation/project-2.png)
+
+![Архитектура тестовых артефактов](presentation/project-3.png)
+
 ## 📚 Каталог тест-кейсов
 
 Все кейсы живут в Jira — здесь каталог со ссылками. Полные шаги, ожидаемые результаты и сетевые проверки открываются по ссылке в колонке Jira.
