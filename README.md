@@ -80,20 +80,20 @@ Shawarma Project (SCRUM)
 
 <table>
   <tr>
-    <td width="50%" align="center"><a href="presentation/project-1.png"><img src="presentation/project-1.png" alt="Титул: ключевые цифры проекта" width="100%"></a><br><sub>Титул: ключевые цифры проекта</sub></td>
-    <td width="50%" align="center"><a href="presentation/project-2.png"><img src="presentation/project-2.png" alt="Архитектура приложения" width="100%"></a><br><sub>Архитектура приложения</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-1-1920.png"><img src="presentation/project-1-1920.png" alt="Титул: ключевые цифры проекта" width="100%"></a><br><sub>Титул: ключевые цифры проекта</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-2-1920.png"><img src="presentation/project-2-1920.png" alt="Архитектура приложения" width="100%"></a><br><sub>Архитектура приложения</sub></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><a href="presentation/project-3.png"><img src="presentation/project-3.png" alt="Архитектура тестовых артефактов" width="100%"></a><br><sub>Архитектура тестовых артефактов</sub></td>
-    <td width="50%" align="center"><a href="presentation/project-4.png"><img src="presentation/project-4.png" alt="Подход к тестированию" width="100%"></a><br><sub>Подход к тестированию</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-3-1920.png"><img src="presentation/project-3-1920.png" alt="Архитектура тестовых артефактов" width="100%"></a><br><sub>Архитектура тестовых артефактов</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-4-1920.png"><img src="presentation/project-4-1920.png" alt="Подход к тестированию" width="100%"></a><br><sub>Подход к тестированию</sub></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><a href="presentation/project-5.png"><img src="presentation/project-5.png" alt="Тест-кейсы по модулям" width="100%"></a><br><sub>Тест-кейсы по модулям</sub></td>
-    <td width="50%" align="center"><a href="presentation/project-6.png"><img src="presentation/project-6.png" alt="Автотесты: две ветки" width="100%"></a><br><sub>Автотесты: две ветки</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-5-1920.png"><img src="presentation/project-5-1920.png" alt="Тест-кейсы по модулям" width="100%"></a><br><sub>Тест-кейсы по модулям</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-6-1920.png"><img src="presentation/project-6-1920.png" alt="Автотесты: две ветки" width="100%"></a><br><sub>Автотесты: две ветки</sub></td>
   </tr>
   <tr>
-    <td width="50%" align="center"><a href="presentation/project-7.png"><img src="presentation/project-7.png" alt="Нагрузочное тестирование" width="100%"></a><br><sub>Нагрузочное тестирование</sub></td>
-    <td width="50%" align="center"><a href="presentation/project-8.png"><img src="presentation/project-8.png" alt="Дефекты и итоги" width="100%"></a><br><sub>Дефекты и итоги</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-7-1920.png"><img src="presentation/project-7-1920.png" alt="Нагрузочное тестирование" width="100%"></a><br><sub>Нагрузочное тестирование</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-8-1920.png"><img src="presentation/project-8-1920.png" alt="Дефекты и итоги" width="100%"></a><br><sub>Дефекты и итоги</sub></td>
   </tr>
 </table>
 
@@ -568,7 +568,7 @@ node .tmp/build-slides.mjs    # слайды в load/presentation
 
 Презентация с результатами — [`load/presentation/`](load/presentation/) (7 слайдов, 1920×1080). Кейсы — эпик [⚡ Нагрузочное тестирование](https://boysporting.atlassian.net/browse/SCRUM-111): 6 пройдено, 2 в бэклоге (soak и стресс).
 
-![Результаты нагрузочного тестирования](load/presentation/slide-1.png)
+![Результаты нагрузочного тестирования](load/presentation/slide-1-1920.png)
 
 ## 🧾 Документация
 
