@@ -82,6 +82,18 @@
         <stringProp name="ThreadGroup.delay">5</stringProp>
       </ThreadGroup>
       <hashTree>
+                <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV с тестовыми данными" enabled="true">
+          <stringProp name="filename">load/test-data.csv</stringProp>
+          <stringProp name="fileEncoding">UTF-8</stringProp>
+          <stringProp name="variableNames">productId,quantity,customerName,phone,deliveryType</stringProp>
+          <boolProp name="ignoreFirstLine">true</boolProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+        </CSVDataSet>
+        <hashTree/>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="X-Cart-Id" enabled="true">
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
@@ -111,7 +123,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{"productId":1,"quantity":1}</stringProp>
+                <stringProp name="Argument.value">{"productId":${productId},"quantity":${quantity}}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -137,6 +149,18 @@
         <stringProp name="ThreadGroup.delay">10</stringProp>
       </ThreadGroup>
       <hashTree>
+                <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV с тестовыми данными" enabled="true">
+          <stringProp name="filename">load/test-data.csv</stringProp>
+          <stringProp name="fileEncoding">UTF-8</stringProp>
+          <stringProp name="variableNames">productId,quantity,customerName,phone,deliveryType</stringProp>
+          <boolProp name="ignoreFirstLine">true</boolProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+        </CSVDataSet>
+        <hashTree/>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Заголовки заказа" enabled="true">
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
@@ -152,7 +176,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{"customerName":"Нагрузочный Тест","phone":"+7 900 000-00-01","deliveryType":"pickup","items":[{"productId":1,"quantity":1}]}</stringProp>
+                <stringProp name="Argument.value">{"customerName":"${customerName}","phone":"${phone}","deliveryType":"${deliveryType}","items":[{"productId":${productId},"quantity":${quantity}}]}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
