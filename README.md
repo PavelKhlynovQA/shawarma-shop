@@ -76,23 +76,30 @@ Shawarma Project (SCRUM)
 
 ## 🎬 Презентация проекта
 
-Восемь слайдов о том, как устроен проект и процесс тестирования. Файлы — в каталоге [`presentation/`](presentation/).
+Восемь слайдов о проекте и процессе тестирования: архитектура, артефакты, подход, кейсы, автотесты, нагрузка, итоги.
 
-| № | Слайд | Файл |
-|---|---|---|
-| 1 | Титул: ключевые цифры проекта | [project-1.png](presentation/project-1.png) |
-| 2 | Архитектура приложения | [project-2.png](presentation/project-2.png) |
-| 3 | Архитектура тестовых артефактов | [project-3.png](presentation/project-3.png) |
-| 4 | Подход к тестированию | [project-4.png](presentation/project-4.png) |
-| 5 | Тест-кейсы по модулям | [project-5.png](presentation/project-5.png) |
-| 6 | Автотесты: две ветки | [project-6.png](presentation/project-6.png) |
-| 7 | Нагрузочное тестирование | [project-7.png](presentation/project-7.png) |
-| 8 | Дефекты и итоги | [project-8.png](presentation/project-8.png) |
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="presentation/project-1.png"><img src="presentation/project-1.png" alt="Титул: ключевые цифры проекта" width="100%"></a><br><sub>Титул: ключевые цифры проекта</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-2.png"><img src="presentation/project-2.png" alt="Архитектура приложения" width="100%"></a><br><sub>Архитектура приложения</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="presentation/project-3.png"><img src="presentation/project-3.png" alt="Архитектура тестовых артефактов" width="100%"></a><br><sub>Архитектура тестовых артефактов</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-4.png"><img src="presentation/project-4.png" alt="Подход к тестированию" width="100%"></a><br><sub>Подход к тестированию</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="presentation/project-5.png"><img src="presentation/project-5.png" alt="Тест-кейсы по модулям" width="100%"></a><br><sub>Тест-кейсы по модулям</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-6.png"><img src="presentation/project-6.png" alt="Автотесты: две ветки" width="100%"></a><br><sub>Автотесты: две ветки</sub></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><a href="presentation/project-7.png"><img src="presentation/project-7.png" alt="Нагрузочное тестирование" width="100%"></a><br><sub>Нагрузочное тестирование</sub></td>
+    <td width="50%" align="center"><a href="presentation/project-8.png"><img src="presentation/project-8.png" alt="Дефекты и итоги" width="100%"></a><br><sub>Дефекты и итоги</sub></td>
+  </tr>
+</table>
 
-![Архитектура приложения](presentation/project-2.png)
+**Коротко в цифрах:** 85 тест-кейсов · 98 автотестов · 10 баг-репортов · 1 081 запрос/с при p95 22 мс и 0% ошибок.
 
-![Архитектура тестовых артефактов](presentation/project-3.png)
-
+Файлы в полном размере — в каталоге [`presentation/`](presentation/).
 ## 📚 Каталог тест-кейсов
 
 Все кейсы живут в Jira — здесь каталог со ссылками. Полные шаги, ожидаемые результаты и сетевые проверки открываются по ссылке в колонке Jira.
