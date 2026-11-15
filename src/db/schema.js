@@ -107,6 +107,23 @@ export function ddl(dialect) {
       'created_at TEXT NOT NULL' +
     ')',
 
+    'CREATE TABLE IF NOT EXISTS carts (' +
+      'id TEXT PRIMARY KEY,' +
+      'created_at TEXT NOT NULL,' +
+      'updated_at TEXT NOT NULL' +
+    ')',
+
+    'CREATE TABLE IF NOT EXISTS cart_items (' +
+      'id ' + id + ',' +
+      'cart_id TEXT NOT NULL REFERENCES carts(id),' +
+      'product_id INTEGER NOT NULL REFERENCES products(id),' +
+      'quantity INTEGER NOT NULL,' +
+      'extras TEXT,' +
+      'created_at TEXT NOT NULL,' +
+      'updated_at TEXT NOT NULL' +
+    ')',
+
+    'CREATE INDEX IF NOT EXISTS idx_cart_items_cart ON cart_items(cart_id)',
     'CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id)',
     'CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id)',
     'CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)',

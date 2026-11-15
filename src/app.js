@@ -11,6 +11,7 @@ import { createMenuRouter } from './routes/menu.js';
 import { createAuthRouter } from './routes/auth.js';
 import { createPromoRouter } from './routes/promo.js';
 import { createOrdersRouter } from './routes/orders.js';
+import { createCartRouter } from './routes/cart.js';
 import { createAdminRouter } from './routes/admin.js';
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
@@ -43,6 +44,7 @@ export function createApp(ctx) {
   app.use('/api', createAuthRouter(routerCtx));
   app.use('/api', createPromoRouter(routerCtx));
   app.use('/api', createOrdersRouter(routerCtx));
+  app.use('/api', createCartRouter(routerCtx));
   app.use('/api', createAdminRouter(routerCtx));
 
   app.use(express.static(publicDir));

@@ -1,7 +1,7 @@
 // Витрина магазина. Ванильный JS без сборки — чтобы проект запускался одной командой.
 
 const API = '';
-const CART_KEY = 'shawarma_cart_v1';
+
 
 const state = {
   menu: [],
@@ -327,52 +327,79 @@ async function refreshTracking(publicId) {
 
 // ---------- Корзина ----------
 
-function loadCart() {
-  try {
-    const raw = localStorage.getItem(CART_KEY);
-    state.cart = raw ? JSON.parse(raw) : [];
-  } catch (error) {
-    state.cart = [];
+const CART_ID_KEY = 'shawarma_cart_id';
+
+function getCartId() {
+  let id = localStorage.getItem(CART_ID_KEY);
+  if (!id) {
+    id = (typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : String(Date.now()) + Math.random().toString(16).slice(2)
+    ).replace(/[^a-zA-Z0-9]/g, '');
+    localStorage.setItem(CART_ID_KEY, id);
   }
+  return id;
 }
 
-function saveCart() {
-  localStorage.setItem(CART_KEY, JSON.stringify(state.cart));
+async function cartRequest(method, path, body) {
+  const headers = { 'X-Cart-Id': getCartId() };
+  if (body) headers['Content-Type'] = 'application/json';
+
+  const res = await fetch(API + path, {
+    method: method,
+    headers: headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const newId = res.headers.get('X-Cart-Id');
+  if (newId) localStorage.setItem(CART_ID_KEY, newId);
+
+  const data = await res.json().catch(function () { return {}; });
+  if (!res.ok) {
+    const message = data && data.error && data.error.message ? data.error.message : 'Ошибка корзины';
+    throw new Error(message);
+  }
+  return data.cart;
+}
+
+function applyCart(cart) {
+  state.cart = cart && cart.items ? cart.items : [];
+  state.cartMeta = {
+    subtotal: cart && cart.subtotal ? cart.subtotal : 0,
+    count: cart && cart.count ? cart.count : 0,
+  };
   renderCartCount();
 }
 
+async function loadCart() {
+  try {
+    applyCart(await cartRequest('GET', '/api/cart'));
+  } catch (error) {
+    applyCart({ items: [], subtotal: 0, count: 0 });
+  }
+}
+
 function renderCartCount() {
-  const total = state.cart.reduce(function (sum, item) { return sum + item.quantity; }, 0);
-  el.cartCount.textContent = String(total);
+  el.cartCount.textContent = String(state.cartMeta ? state.cartMeta.count : 0);
 }
 
 function cartSubtotal() {
-  return state.cart.reduce(function (sum, item) {
-    const extrasSum = item.extras.reduce(function (s, e) { return s + e.price; }, 0);
-    return sum + (item.price + extrasSum) * item.quantity;
-  }, 0);
+  return state.cartMeta ? state.cartMeta.subtotal : 0;
 }
 
-function addToCart(product, quantity, extras) {
-  const extraIds = extras.map(function (e) { return e.id; }).sort(function (a, b) { return a - b; });
-  const key = product.id + '|' + extraIds.join(',');
-  const existing = state.cart.find(function (item) { return item.key === key; });
-  if (existing) {
-    existing.quantity += quantity;
-  } else {
-    state.cart.push({
-      key: key,
+async function addToCart(product, quantity, extras) {
+  try {
+    const cart = await cartRequest('POST', '/api/cart/items', {
       productId: product.id,
-      name: product.name,
-      emoji: product.emoji,
-      price: product.price,
       quantity: quantity,
-      extras: extras,
+      extras: extras.map(function (e) { return e.id; }),
     });
+    applyCart(cart);
+    renderCart();
+    toast(product.name + ' — в корзине');
+  } catch (error) {
+    toast(error.message, true);
   }
-  saveCart();
-  renderCart();
-  toast(product.name + ' — в корзине');
 }
 
 // ---------- Меню ----------
@@ -484,9 +511,8 @@ function renderCart() {
   }
 
   el.cartItems.innerHTML = state.cart.map(function (item) {
-    const extrasSum = item.extras.reduce(function (s, e) { return s + e.price; }, 0);
-    const linePrice = (item.price + extrasSum) * item.quantity;
-    const extrasLabel = item.extras.length
+    const linePrice = item.lineTotal;
+    const extrasLabel = item.extras && item.extras.length
       ? item.extras.map(function (e) { return e.name; }).join(', ')
       : '';
     return [
@@ -496,10 +522,10 @@ function renderCart() {
       '    <div class="cart-row__title">' + item.name + '</div>',
       extrasLabel ? '    <div class="cart-row__sub">+ ' + extrasLabel + '</div>' : '',
       '    <div class="qty">',
-      '      <button data-dec="' + item.key + '">−</button>',
+      '      <button data-dec="' + item.id + '">−</button>',
       '      <span>' + item.quantity + '</span>',
-      '      <button data-inc="' + item.key + '">+</button>',
-      '      <button data-del="' + item.key + '" style="margin-left:8px;width:auto;padding:0 8px">Удалить</button>',
+      '      <button data-inc="' + item.id + '">+</button>',
+      '      <button data-del="' + item.id + '" style="margin-left:8px;width:auto;padding:0 8px">Удалить</button>',
       '    </div>',
       '  </div>',
       '  <div class="cart-row__price">' + money(linePrice) + '</div>',
@@ -597,9 +623,12 @@ function openCheckout() {
     }
 
     const order = result.data.order;
-    state.cart = [];
     state.promo = null;
-    saveCart();
+    try {
+      applyCart(await cartRequest('DELETE', '/api/cart'));
+    } catch (error) {
+      applyCart({ items: [], subtotal: 0, count: 0 });
+    }
     renderCart();
 
     renderPaymentStep(order);
@@ -679,29 +708,28 @@ el.productModalBody.addEventListener('click', function (event) {
   }
 });
 
-el.cartItems.addEventListener('click', function (event) {
+el.cartItems.addEventListener('click', async function (event) {
   const inc = event.target.closest('[data-inc]');
   const dec = event.target.closest('[data-dec]');
   const del = event.target.closest('[data-del]');
 
-  if (inc) {
-    const item = state.cart.find(function (i) { return i.key === inc.getAttribute('data-inc'); });
-    if (item) item.quantity += 1;
-  } else if (dec) {
-    const key = dec.getAttribute('data-dec');
-    const item = state.cart.find(function (i) { return i.key === key; });
-    if (item) {
-      item.quantity -= 1;
-      if (item.quantity <= 0) state.cart = state.cart.filter(function (i) { return i.key !== key; });
-    }
-  } else if (del) {
-    state.cart = state.cart.filter(function (i) { return i.key !== del.getAttribute('data-del'); });
-  } else {
-    return;
-  }
+  if (!inc && !dec && !del) return;
 
-  saveCart();
-  renderCart();
+  const id = inc ? inc.getAttribute('data-inc') : dec ? dec.getAttribute('data-dec') : del.getAttribute('data-del');
+  const item = state.cart.find(function (i) { return String(i.id) === String(id); });
+
+  try {
+    if (del) {
+      applyCart(await cartRequest('DELETE', '/api/cart/items/' + id));
+    } else if (inc && item) {
+      applyCart(await cartRequest('PATCH', '/api/cart/items/' + id, { quantity: item.quantity + 1 }));
+    } else if (dec && item) {
+      applyCart(await cartRequest('PATCH', '/api/cart/items/' + id, { quantity: item.quantity - 1 }));
+    }
+    renderCart();
+  } catch (error) {
+    toast(error.message, true);
+  }
 });
 
 el.cartFooter.addEventListener('click', function (event) {
@@ -714,7 +742,7 @@ el.cartFooter.addEventListener('click', function (event) {
 // ---------- Старт ----------
 
 async function bootstrap() {
-  loadCart();
+  await loadCart();
   loadAuth();
   renderAuthArea();
   renderCartCount();

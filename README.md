@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/PavelKhlynovQA/shawarma-shop/actions/workflows/ci.yml/badge.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D24-brightgreen)
-![Тесты](https://img.shields.io/badge/tests-63%20passed-success)
+![Тесты](https://img.shields.io/badge/tests-79%20passed-success)
 ![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33)
 
 [![Confluence](https://img.shields.io/badge/Confluence-документация-0052CC?logo=confluence&logoColor=white)](https://boysporting.atlassian.net/wiki/spaces/QASHOP)
@@ -181,6 +181,11 @@ shawarma-shop/
 | POST | `/api/auth/phone/request-code` | — | Код на телефон |
 | POST | `/api/auth/phone/verify` | — | Вход по коду |
 | POST | `/api/promo/validate` | — | Проверка промокода |
+| GET | `/api/cart` | опц. | Получить корзину |
+| POST | `/api/cart/items` | опц. | Добавить товар в корзину |
+| PATCH | `/api/cart/items/:id` | опц. | Изменить количество |
+| DELETE | `/api/cart/items/:id` | опц. | Удалить позицию |
+| DELETE | `/api/cart` | опц. | Очистить корзину |
 | POST | `/api/orders` | опц. | Создание заказа |
 | POST | `/api/orders/:publicId/pay` | опц. | Оплата картой |
 | GET | `/api/orders` | Bearer | Мои заказы |
@@ -211,7 +216,7 @@ shawarma-shop/
 
 | Уровень | Кол-во | Время | Команда |
 |---|---|---|---|
-| API (`node:test`) | 23 | ~2 с | `npm test` |
+| API (`node:test`) | 39 | ~3 с | `npm test` |
 | E2E (Playwright) | 35 | ~40 с | `npm run test:e2e` |
 | Визуальные | 5 | ~7 с | `npm run test:visual` |
 
