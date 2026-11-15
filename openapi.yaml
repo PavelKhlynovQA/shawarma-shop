@@ -10,6 +10,7 @@ tags:
   - name: menu
   - name: auth
   - name: promo
+  - name: cart
   - name: orders
   - name: admin
 paths:
@@ -117,6 +118,135 @@ paths:
       responses:
         '200': { description: Скидка рассчитана }
         '409': { description: Промокод неактивен или просрочен }
+  /api/cart:
+    get:
+      tags: [cart]
+      summary: Получить корзину
+      description: Если заголовок X-Cart-Id не передан, создаётся новая корзина; её идентификатор возвращается в заголовке ответа X-Cart-Id.
+      parameters:
+        - in: header
+          name: X-Cart-Id
+          required: false
+          schema: { type: string, minLength: 8, maxLength: 64 }
+      responses:
+        '200':
+          description: Корзина
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cart:
+                    type: object
+                    properties:
+                      id: { type: string }
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id: { type: integer }
+                            productId: { type: integer }
+                            name: { type: string }
+                            emoji: { type: string }
+                            price: { type: integer }
+                            quantity: { type: integer }
+                            extras:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id: { type: integer }
+                                  name: { type: string }
+                                  price: { type: integer }
+                            unitPrice: { type: integer }
+                            lineTotal: { type: integer }
+                      subtotal: { type: integer }
+                      count: { type: integer }
+    delete:
+      tags: [cart]
+      summary: Очистить корзину
+      parameters:
+        - in: header
+          name: X-Cart-Id
+          required: false
+          schema: { type: string }
+      responses:
+        '200': { description: Корзина очищена }
+
+  /api/cart/items:
+    post:
+      tags: [cart]
+      summary: Добавить товар в корзину
+      description: Товар с тем же набором дополнителей увеличивает количество существующей позиции.
+      parameters:
+        - in: header
+          name: X-Cart-Id
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [productId]
+              properties:
+                productId: { type: integer, example: 1 }
+                quantity: { type: integer, minimum: 1, maximum: 20, default: 1, example: 2 }
+                extras:
+                  type: array
+                  items: { type: integer }
+                  example: [1, 2]
+      responses:
+        '201': { description: Позиция добавлена }
+        '400': { description: Некорректное количество или неизвестный дополнитель }
+        '404': { description: Товар не найден }
+        '409': { description: Товар или дополнитель недоступен }
+
+  /api/cart/items/{id}:
+    patch:
+      tags: [cart]
+      summary: Изменить количество позиции
+      description: Значение 0 удаляет позицию.
+      parameters:
+        - in: header
+          name: X-Cart-Id
+          required: false
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity: { type: integer, minimum: 0, maximum: 20 }
+      responses:
+        '200': { description: Количество изменено }
+        '400': { description: Некорректное количество }
+        '404': { description: Позиция не найдена }
+    delete:
+      tags: [cart]
+      summary: Удалить позицию из корзины
+      parameters:
+        - in: header
+          name: X-Cart-Id
+          required: false
+          schema: { type: string }
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Позиция удалена }
+        '404': { description: Позиция не найдена }
+
   /api/orders:
     post:
       tags: [orders]
