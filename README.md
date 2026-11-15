@@ -329,14 +329,29 @@ shawarma-shop/
 │   ├── db/                     адаптер PostgreSQL/SQLite, схема, миграции, сиды
 │   ├── lib/                    jwt, пароли, валидация, ошибки
 │   ├── middleware/             логирование, auth, обработка ошибок
-│   └── routes/                 health, menu, auth, promo, orders, admin
+│   └── routes/                 health, menu, auth, promo, orders, cart, admin
 ├── public/                     витрина и админка (vanilla JS)
-├── tests/
+├── tests/                      автотесты на Node.js — 79 тестов
 │   ├── api.test.js             23 API-теста
-│   └── e2e/
-│       ├── pages/              6 Page Object классов
-│       └── *.spec.js           35 E2E-сценариев
-├── tests/visual/               5 визуальных снапшотов
+│   ├── cart.test.js            16 тестов API корзины
+│   ├── e2e/
+│   │   ├── pages/              6 Page Object классов
+│   │   └── *.spec.js           35 E2E-сценариев
+│   └── visual/                 5 визуальных снапшотов
+├── java-tests/                 автотесты на Java — 19 тестов
+│   ├── pom.xml                 Maven: JUnit 5, REST Assured, Selenium, AssertJ
+│   ├── README.md               запуск, локаторы, параметры
+│   └── src/test/java/com/shawarma/
+│       ├── api/CartApiTest.java        8 тестов API корзины
+│       ├── api/OrdersApiTest.java      5 тестов API заказов
+│       └── ui/StorefrontUiTest.java    6 UI-тестов на Selenium
+├── load/                       нагрузочное тестирование — JMeter
+│   ├── plan.jmx                план: 21 виртуальный пользователь, 60 с
+│   ├── metrics.json            метрики прогона: RPS, перцентили, ошибки
+│   ├── presentation/           7 слайдов с результатами нагрузки
+│   └── README.md               профиль нагрузки и инструкция запуска
+├── presentation/               8 слайдов о проекте и процессе тестирования
+├── handover/                   пакет для передачи проекта на ревью
 ├── qa-docs/
 │   ├── content/                данные документации (единый источник)
 │   ├── build.mjs               сайт + Confluence-страницы + CSV
