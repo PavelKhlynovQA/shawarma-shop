@@ -519,12 +519,6 @@ By TAB_DRINKS = By.xpath("//button[normalize-space()='Напитки']");
 | `POST /api/cart/items` | 4 152 | 56 мс | 47 мс | 2 739 мс |
 | `POST /api/orders` | 1 021 | 59 мс | 66 мс | 3 659 мс |
 
-```bash
-jmeter -n -t load/plan.jmx -l load/results.jtl
-node .tmp/parse-load.mjs      # метрики в load/metrics.json
-node .tmp/build-slides.mjs    # слайды в load/presentation
-```
-
 ### Почему возникают всплески задержек
 
 Среднее время отклика на чтении — 9–13 мс, но максимумы на записи доходят до 2.7 и 3.6 секунды. Причина не в сети: узкие места находятся в коде и конфигурации БД.
@@ -558,6 +552,13 @@ node .tmp/build-slides.mjs    # слайды в load/presentation
 **Как проверять результат:** после каждой правки — повторный прогон того же профиля нагрузки и сравнение метрик. Целевые значения: `p99 < 100 мс`, максимум `< 500 мс`, доля ошибок `0%`.
 
 ### Запуск
+
+```bash
+jmeter -n -t load/plan.jmx -l load/results.jtl
+node .tmp/parse-load.mjs      # метрики в load/metrics.json
+node .tmp/build-slides.mjs    # слайды в load/presentation
+```
+
 Презентация с результатами — [`load/presentation/`](load/presentation/) (7 слайдов). Кейсы — эпик [⚡ Нагрузочное тестирование](https://boysporting.atlassian.net/browse/SCRUM-111): 6 пройдено, 2 в бэклоге (soak и стресс).
 
 ![Результаты нагрузочного тестирования](load/presentation/slide-1.png)
