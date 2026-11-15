@@ -564,8 +564,7 @@ By TAB_DRINKS = By.xpath("//button[normalize-space()='Напитки']");
 
 ```bash
 jmeter -n -t load/plan.jmx -l load/results.jtl
-node .tmp/parse-load.mjs      # метрики в load/metrics.json
-node .tmp/build-slides.mjs    # слайды в load/presentation
+node load/parse.mjs           # метрики в load/metrics.json
 ```
 
 Презентация с результатами — [`load/presentation/`](load/presentation/) (7 слайдов, 1920×1080).
@@ -603,7 +602,7 @@ productId,quantity,customerName,phone,deliveryType
 
 ```bash
 jmeter -n -t load/plan.jmx -l load/results.jtl   # прогон
-node .tmp/parse-load.mjs                          # results.jtl -> metrics.json
+node load/parse.mjs                               # results.jtl -> metrics.json
 ``` Кейсы — эпик [⚡ Нагрузочное тестирование](https://boysporting.atlassian.net/browse/SCRUM-111): 6 пройдено, 2 в бэклоге (soak и стресс).
 
 ![Результаты нагрузочного тестирования](load/presentation/slide-1-1920.png)
@@ -619,9 +618,9 @@ node .tmp/parse-load.mjs                          # results.jtl -> metrics.json
 | Визуальные (5) | [`tests/visual/`](tests/visual/) | каждый push и pull request, не блокирует merge | ~7 с |
 | **Java smoke (13)** | [`java-tests/`](java-tests/) | каждый push и pull request | ~35 с |
 | Java полный (19) | [`java-tests/`](java-tests/) | локально или вручную | ~22 с |
-| Нагрузочные (8) | [`load/`](load/) | вручную, по расписанию | ~70 с |
+| Нагрузочные (8) | [`load/`](load/) | ночью по расписанию и вручную | ~70 с |
 
-Конфигурация — [`.github/workflows/ci.yml`](.github/workflows/ci.yml), пять джоб: `api-tests`, `e2e-tests`, `visual-tests`, `java-smoke`, `docker-build`.
+Конфигурация — [`.github/workflows/ci.yml`](.github/workflows/ci.yml). На каждый push и pull request идут пять джоб: `api-tests`, `e2e-tests`, `visual-tests`, `java-smoke`, `docker-build`. Ночью по расписанию добавляются `java-full` и `load-smoke`.
 
 ### Почему Java-тесты лежат рядом с кодом
 

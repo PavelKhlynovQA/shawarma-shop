@@ -4,6 +4,8 @@ on:
   push:
     branches: [main, master]
   pull_request:
+  schedule:
+    - cron: '0 2 * * *'
   workflow_dispatch:
 
 concurrency:
@@ -150,6 +152,96 @@ jobs:
           path: java-tests/target/surefire-reports/
           retention-days: 7
 
+  java-full:
+    name: Java-тесты (полный набор, ночной)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Установка зависимостей приложения
+        run: npm ci
+
+      - name: Запуск приложения
+        run: |
+          npm start &
+          for i in $(seq 1 40); do
+            curl -sf http://localhost:3000/api/health > /dev/null && break
+            sleep 1
+          done
+
+      - name: Полный прогон Java-тестов
+        run: mvn -B -f java-tests/pom.xml test
+
+      - name: Отчёт Surefire
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-full
+          path: java-tests/target/surefire-reports/
+          retention-days: 14
+
+  load-smoke:
+    name: Нагрузочный прогон (ночной)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Установка JMeter
+        run: |
+          curl -sSL -o jmeter.zip https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.zip
+          unzip -q jmeter.zip
+
+      - name: Установка зависимостей приложения
+        run: npm ci
+
+      - name: Запуск приложения
+        run: |
+          npm start &
+          for i in $(seq 1 40); do
+            curl -sf http://localhost:3000/api/health > /dev/null && break
+            sleep 1
+          done
+
+      - name: Нагрузочный прогон (60 секунд)
+        run: ./apache-jmeter-5.6.3/bin/jmeter -n -t load/plan.jmx -l load/results.jtl -j load/jmeter.log
+
+      - name: Метрики прогона
+        if: always()
+        run: node load/parse.mjs
+
+      - name: Артефакты прогона
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-results
+          path: |
+            load/results.jtl
+            load/metrics.json
+            load/jmeter.log
+          retention-days: 14
   docker-build:
     name: Сборка Docker-образа
     runs-on: ubuntu-latest

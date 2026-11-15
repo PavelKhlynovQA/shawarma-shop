@@ -33,8 +33,7 @@ jmeter -n -t load/plan.jmx -l load/results.jtl -j load/jmeter.log
 Разбор результатов:
 
 ```bash
-node .tmp/parse-load.mjs      # формирует load/metrics.json
-node .tmp/build-slides.mjs    # пересобирает слайды
+node load/parse.mjs           # формирует load/metrics.json
 ```
 
 ## Результаты прогона 15.11.2026
