@@ -34,13 +34,20 @@ class StorefrontUiTest {
     private static final By CART_BUTTON = By.xpath("//button[@id='cartButton']");
     private static final By CART_COUNTER = By.xpath("//*[@id='cartCount']");
     private static final By MODAL_ADD_BUTTON = By.xpath("//button[@id='modalAdd']");
-    private static final By PRODUCT_CARDS = By.xpath("//div[contains(@class,'card')]");
+    private static final By PRODUCT_CARDS = By.xpath("//article[contains(concat(' ', normalize-space(@class), ' '), ' card ')]");
 
     @BeforeEach
     void openBrowser() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--window-size=1440,900");
         options.addArguments("--disable-gpu");
+        if (System.getProperty("headless", "true").equals("true")) {
+            options.addArguments("--headless=new");
+        }
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--user-data-dir=" + System.getProperty("user.dir")
+                + "/target/chrome-profile-" + java.util.UUID.randomUUID());
         driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         driver.get(TestConfig.uiBase());
@@ -56,8 +63,9 @@ class StorefrontUiTest {
     @Test
     @DisplayName("Главная страница открывается и содержит заголовок витрины")
     void storefrontOpens() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(),'Шаурма')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(PRODUCT_CARDS));
         assertThat(driver.getTitle()).contains("Шаурма");
+        assertThat(driver.findElements(ADD_TO_CART_BUTTON)).isNotEmpty();
     }
 
     @Test

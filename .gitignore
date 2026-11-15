@@ -25,3 +25,5 @@ tools/
 
 # Диффы визуальных тестов
 *.actual.png
+.tools/
+java-tests/target/

@@ -25,6 +25,21 @@
 mvn test
 ```
 
+Проверено: **19 из 19 тестов проходят** на JDK 21 + Maven 3.9.9 + Chrome 157.
+
+Если Selenium не может сам скачать драйвер (закрытая сеть), укажите путь вручную:
+
+```bash
+mvn test -Dwebdriver.chrome.driver=/path/to/chromedriver
+```
+
+Для окружений с ограниченной записью во временные каталоги задайте TEMP внутри проекта:
+
+```powershell
+$env:TEMP = "$PWD/.tmp/chrome-temp"
+$env:TMP = $env:TEMP
+```
+
 Параметры можно переопределить:
 
 ```bash
