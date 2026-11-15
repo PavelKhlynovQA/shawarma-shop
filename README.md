@@ -19,7 +19,7 @@
 | Артефакт | Где лежит |
 |---|---|
 | **Документация** — требования, проектирование, тестирование, эксплуатация | [Confluence · QA · Шаурма-Мастер](https://boysporting.atlassian.net/wiki/spaces/QASHOP) |
-| **Тест-кейсы и баг-репорты** — 53 кейса, 10 дефектов | [Jira · Shawarma Project](https://boysporting.atlassian.net/jira/software/projects/SCRUM) |
+| **Тест-кейсы и баг-репорты** — 53 кейса, 10 дефектов (единственный источник правды) | [Jira · Shawarma Project](https://boysporting.atlassian.net/jira/software/projects/SCRUM) |
 | **Автотесты** — 23 API + 35 E2E + 5 визуальных | каталог [`tests/`](tests/) |
 | **Результаты прогонов** — Allure и Playwright-отчёты | вкладка [Actions](https://github.com/PavelKhlynovQA/shawarma-shop/actions) |
 | **Исходники документации** — генератор и данные | [`qa-docs/`](qa-docs/) |
@@ -27,6 +27,8 @@
 ![Confluence](docs/screenshots/confluence-space.png)
 
 > 🔒 Пространство Confluence и проект Jira приватные: доступ выдаётся по приглашению. Скриншоты ключевых страниц лежат в [`docs/screenshots/`](docs/screenshots/).
+
+**Разделение ролей систем:** тест-кейсы и дефекты живут в Jira — там у них статусы, исполнители и история. В Confluence остались требования, проектирование, стратегия, отчёты и руководства; страницы «Тест-кейсы» и «Баг-репорты» превращены в индексы со ссылками на задачи Jira, чтобы не было двух версий одного артефакта.
 
 ## Стек
 
