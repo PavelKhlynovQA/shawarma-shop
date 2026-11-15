@@ -46,6 +46,12 @@ $env:TMP = $env:TEMP
 mvn test -Dapi.base=http://localhost:3000 -Dui.base=http://localhost:3000
 ```
 
+Smoke-набор, который запускается в CI (только API, без браузера):
+
+```bash
+mvn test -Dtest=CartApiTest,OrdersApiTest
+```
+
 Только API или только UI:
 
 ```bash
