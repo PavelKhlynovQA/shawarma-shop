@@ -5,11 +5,28 @@
 ![Тесты](https://img.shields.io/badge/tests-63%20passed-success)
 ![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33)
 
+[![Confluence](https://img.shields.io/badge/Confluence-документация-0052CC?logo=confluence&logoColor=white)](https://boysporting.atlassian.net/wiki/spaces/QASHOP)
+[![Jira](https://img.shields.io/badge/Jira-тест--кейсы%20и%20баги-0052CC?logo=jira&logoColor=white)](https://boysporting.atlassian.net/jira/software/projects/SCRUM)
+
 > Репозиторий: [github.com/PavelKhlynovQA/shawarma-shop](https://github.com/PavelKhlynovQA/shawarma-shop)
 
 Полноценный проект интернет-магазина шаурмы, созданный как **полигон для функционального и автоматизированного тестирования**. Реальный backend, база данных, UI, Docker и полный набор тестовых артефактов.
 
 > Проект специально сделан так, чтобы на нём было что тестировать: бизнес-правила, ограничения, состояния заказа, негативные сценарии и несколько намеренно оставленных дефектов (см. `docs/05-bug-reports.md`).
+
+## 📋 Где смотреть артефакты
+
+| Артефакт | Где лежит |
+|---|---|
+| **Документация** — требования, проектирование, тестирование, эксплуатация | [Confluence · QA · Шаурма-Мастер](https://boysporting.atlassian.net/wiki/spaces/QASHOP) |
+| **Тест-кейсы и баг-репорты** — 53 кейса, 10 дефектов | [Jira · Shawarma Project](https://boysporting.atlassian.net/jira/software/projects/SCRUM) |
+| **Автотесты** — 23 API + 35 E2E + 5 визуальных | каталог [`tests/`](tests/) |
+| **Результаты прогонов** — Allure и Playwright-отчёты | вкладка [Actions](https://github.com/PavelKhlynovQA/shawarma-shop/actions) |
+| **Исходники документации** — генератор и данные | [`qa-docs/`](qa-docs/) |
+
+![Confluence](docs/screenshots/confluence-space.png)
+
+> 🔒 Пространство Confluence и проект Jira приватные: доступ выдаётся по приглашению. Скриншоты ключевых страниц лежат в [`docs/screenshots/`](docs/screenshots/).
 
 ## Стек
 
