@@ -148,7 +148,7 @@ Shawarma Project (SCRUM)
 
 | ID | Что проверяет | Требование | Jira |
 |---|---|---|---|
-| TC-API-01 | Проверка живости сервиса | NFR-04 | [SCRUM-25](https://boysporting.atlassian.net/browse/SCRUM-25) |
+| TC-API-01 | Проверка работоспособности сервиса | NFR-04 | [SCRUM-25](https://boysporting.atlassian.net/browse/SCRUM-25) |
 | TC-API-02 | Получение меню с категориями | FR-01 | [SCRUM-26](https://boysporting.atlassian.net/browse/SCRUM-26) |
 | TC-API-03 | Запрос несуществующего товара | FR-01 | [SCRUM-27](https://boysporting.atlassian.net/browse/SCRUM-27) |
 | TC-API-04 | Успешный вход администратора | FR-14 | [SCRUM-28](https://boysporting.atlassian.net/browse/SCRUM-28) |
@@ -314,7 +314,7 @@ shawarma-shop/
 
 | Метод | Путь | Доступ | Назначение |
 |---|---|---|---|
-| GET | `/api/health` | — | Живость и драйвер БД |
+| GET | `/api/health` | — | работоспособность и драйвер БД |
 | GET | `/api/menu` | — | Категории с товарами |
 | GET | `/api/products/:id` | — | Товар по id |
 | GET | `/api/extras` | — | Дополнители |

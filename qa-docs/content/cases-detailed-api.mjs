@@ -3,7 +3,7 @@ const BASE = 'http://localhost:3000';
 
 export const DETAILED_API = [
   {
-    id: 'TC-API-01', module: 'Health', priority: 'Высокий', title: 'Проверка живости сервиса',
+    id: 'TC-API-01', module: 'Health', priority: 'Высокий', title: 'Проверка работоспособности сервиса',
     requirement: 'NFR-04', automation: 'smoke.test.js',
     preconditions: ['Приложение запущено'],
     api: { method: 'GET', url: BASE + '/api/health', headers: {}, body: null,

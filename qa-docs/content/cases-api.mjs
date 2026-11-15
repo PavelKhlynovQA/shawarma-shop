@@ -1,6 +1,6 @@
 // Тест-кейсы уровня API.
 export const API_CASES = [
-  { id: 'TC-API-01', module: 'Health', priority: 'Высокий', title: 'Проверка живости сервиса',
+  { id: 'TC-API-01', module: 'Health', priority: 'Высокий', title: 'Проверка работоспособности сервиса',
     request: 'GET /api/health', expected: '200, {"status":"ok"}, указан драйвер БД', data: '—', automation: 'smoke.test.js', requirement: 'NFR-04', status: 'Пройден' },
   { id: 'TC-API-02', module: 'Меню', priority: 'Высокий', title: 'Получение меню',
     request: 'GET /api/menu', expected: '200, 5 категорий, у товаров заполнены цена, вес, imageUrl', data: '—', automation: 'smoke.test.js', requirement: 'FR-01', status: 'Пройден' },
