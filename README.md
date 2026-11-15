@@ -19,7 +19,10 @@
 | Артефакт | Ссылка | Что внутри |
 |---|---|---|
 | **Документация** | [Confluence · QA · Шаурма-Мастер](https://boysporting.atlassian.net/wiki/spaces/QASHOP) | 4 раздела, 23 страницы |
-| **Тест-кейсы** | [Фильтр «QA · Тест-кейсы»](https://boysporting.atlassian.net/issues/?filter=10001) | 53 кейса, 181 шаг, JSON запросов |
+| **Все тест-кейсы** | [Фильтр «QA · Тест-кейсы»](https://boysporting.atlassian.net/issues/?filter=10001) | 53 кейса, 232 шага |
+| **API-тест-кейсы** | [Фильтр «QA · API-тесты»](https://boysporting.atlassian.net/issues/?filter=10003) | 27 кейсов с JSON запросов и ответов |
+| **UI-тест-кейсы** | [Фильтр «QA · UI-тесты»](https://boysporting.atlassian.net/issues/?filter=10004) | 18 кейсов со скриншотами |
+| **БД-тест-кейсы** | [Фильтр «QA · БД-тесты»](https://boysporting.atlassian.net/issues/?filter=10005) | 8 SQL-проверок |
 | **Баг-репорты** | [Фильтр «QA · Баг-репорты»](https://boysporting.atlassian.net/issues/?filter=10002) | 10 дефектов |
 | **Автотесты** | [`tests/`](tests/) | 23 API + 35 E2E + 5 визуальных |
 | **Результаты прогонов** | [Actions](https://github.com/PavelKhlynovQA/shawarma-shop/actions) | Allure и Playwright-отчёты |
@@ -58,7 +61,9 @@ QA · Шаурма-Мастер
 
 ```
 Shawarma Project (SCRUM)
-├── 📁 Тест-кейсы (53)      SCRUM-70   → TC-UI-01…18, TC-API-01…27, TC-DB-01…08
+├── 📁 Тест-кейсы API (27)  SCRUM-72   → TC-API-01…27
+├── 📁 Тест-кейсы UI (18)   SCRUM-73   → TC-UI-01…18
+├── 📁 Тест-кейсы БД (8)    SCRUM-74   → TC-DB-01…08
 ├── 🐞 Баг-репорты (10)     SCRUM-71   → BUG-001…010
 └── QA: Шаурма-Мастер …     SCRUM-6    → эпик-зонтик
 ```
