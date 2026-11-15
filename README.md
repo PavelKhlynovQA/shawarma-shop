@@ -224,11 +224,40 @@ Shawarma Project (SCRUM)
 | БД (локально) | SQLite (встроенный `node:sqlite`) |
 | Frontend | Vanilla JS + CSS, без сборки |
 | Аутентификация | JWT (HS256) на встроенном `crypto`, вход по телефону (OTP) |
-| Тесты | `node:test` + `fetch`, Playwright, визуальная регрессия |
+| Тесты (Node.js) | `node:test` + `fetch`, Playwright, визуальная регрессия |
+| **Тесты (Java)** | **Java 21 LTS**, **Maven 3.9**, JUnit 5, REST Assured, Selenium 4, AssertJ |
 | Документация | Confluence Storage Format, генераторы на Node.js |
 | Инфраструктура | Docker, Docker Compose, GitHub Actions |
 
 **Зависимостей в рантайме всего две: `express` и `pg`.** Всё остальное — стандартная библиотека Node.
+
+### Java-стек подробнее
+
+| Компонент | Версия | Зачем |
+|---|---|---|
+| JDK | 21 LTS (сборка под `release 17`) | JUnit 5 требует 17+, LTS стабильнее 23 |
+| Maven | 3.9.9 | Сборка, зависимости, запуск тестов |
+| JUnit 5 | 5.10.2 | Тест-раннер, параметризация, теги |
+| REST Assured | 5.4.0 | API-тесты: DSL поверх HTTP, проверки JSON |
+| Selenium | 4.20.0 + ChromeDriver 157 | UI-тесты, XPath-локаторы |
+| AssertJ | 3.25.3 | Читаемые проверки: `assertThat(x).isEqualTo(y)` |
+| Surefire | 3.2.5 | Отчёты о прогонах в XML/HTML |
+
+Проект собирается под Java 17 и проверен на 21. На Java 23 тоже запустится, но LTS-версии предпочтительнее для портфолио: на них смотрят в командах.
+
+### Что ещё можно было использовать
+
+| Задача | В проекте | Альтернативы | Почему выбрано так |
+|---|---|---|---|
+| Сборка | Maven | Gradle, Ant | Maven — стандарт в enterprise, `pom.xml` читается без изучения скриптов |
+| Тест-раннер | JUnit 5 | TestNG, Spock (Groovy) | JUnit 5 — дефолт для Java, поддержан везде |
+| API-тесты | REST Assured | Karate DSL, Apache HttpClient + JSONassert, OkHttp | REST Assured даёт готовые проверки JSON и статусов без ручного разбора |
+| UI-тесты | Selenium 4 | **Selenide**, **Playwright Java**, Cypress, Serenity + Cucumber | Selenium — базовый навык, который спрашивают на собеседованиях. Selenide был бы лаконичнее, Playwright Java — стабильнее |
+| Проверки | AssertJ | Hamcrest, JUnit assertions, Google Truth | AssertJ — цепочки читаются как предложения |
+| Моки и стабы | — | WireMock, Mockito, Testcontainers | Не нужны: тесты идут против реального стенда. Для изоляции пригодился бы WireMock |
+| Проверки БД | вручную | JDBC + Testcontainers, DbUnit | Кандидат на развитие: Testcontainers поднимает PostgreSQL в тесте |
+| Отчёты | Surefire XML | **Allure**, ExtentReports | Allure уже используется в Node-ветке — логичный следующий шаг |
+| CI | GitHub Actions для Node.js | отдельный job `mvn test` | Java-job пока не добавлен — кандидат на развитие |
 
 ---
 
